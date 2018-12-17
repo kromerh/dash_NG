@@ -16,7 +16,7 @@ import flask
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import numpy as np
 import pandas as pd
 import datetime, time
@@ -27,7 +27,8 @@ import plotly.graph_objs as go
 server = flask.Flask(__name__)
 app = dash.Dash(__name__, server=server)
 
-
+# Dash CSS
+app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 
 def getAvailableHistoricalDates():
 	# returns available dates from the database
@@ -170,8 +171,9 @@ page_historical_layout = html.Div([
 			options=[{'label': i, 'value': i} for i in lst_dates],
 			value='2018-07-30')
 		),
-	html.Hr(),
+	html.Button(id='button-plot-historical', n_clicks=0, children='Submit'),
 
+	html.Hr(),
 
 	html.Div(id='display-date-plotted'),
 
@@ -356,15 +358,17 @@ def retrieveHistoricalData(date):  # read past 2hrs by default
 # callback to display what date is plotted
 @app.callback(
 	dash.dependencies.Output('display-date-plotted', 'children'),
-	[dash.dependencies.Input('date_dropdown', 'value')])
-def set_date_to_be_plotted(date):
-	return u'Plotting date {}'.format(date)
+	[dash.dependencies.Input('button-plot-historical', 'n_clicks')],
+	[dash.dependencies.State('date_dropdown', 'value')])
+def set_date_to_be_plotted(n_clicks, date):
+	return u'Plot for date: {}'.format(date)
 
 # callback to retrieve the data and plot it
 @app.callback(
 	dash.dependencies.Output('indicator-graphic-historical', 'figure'),
-	[dash.dependencies.Input('date_dropdown', 'value')])
-def update_figure_historical(date):
+	[dash.dependencies.Input('button-plot-historical', 'n_clicks')],
+	[dash.dependencies.State('date_dropdown', 'value')])
+def update_figure_historical(n_clicks, date):
 	df_dose, df_HV, df_pressure = retrieveHistoricalData(date)  # retrieve the past 2 hrs
 	# plot each
 	# set a common x axis label!
