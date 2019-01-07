@@ -4,8 +4,8 @@
 
 ### What to do when the RaspberryPi running the database was restarted:
 
-- execute ´sudo mount -a´
-- execute ´sudo systemctl start mysql´
+- execute `sudo mount -a`
+- execute `sudo systemctl start mysql`
 
 ## Main Application
 
