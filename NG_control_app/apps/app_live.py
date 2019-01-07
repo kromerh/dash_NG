@@ -37,23 +37,69 @@ def retrieveLiveData(pastSeconds=7200):  # read past 2hrs by default
 
 	return df_dose
 
+
+hours_to_plot = 3 # plot the past 3 hours for the live stream
+hours_to_plot_today = 12 # plot the past 12 hours for the today stream
 ################################################################################################################################################
 # LIVE route: layout
 ################################################################################################################################################
 
+
 layout = html.Div(children=[
-	html.H1(children='Neutron Generator Data Display - live plotter'),
+    html.Div([
+	   html.H1(children='Neutron Generator Data Display - live plotter')
+       ], className='banner'),
 
-    html.Label('Live stream for the past 2 hours:'),
     html.Hr(),
-    html.Div(id='display-time'),
-	dcc.Graph(id='indicator-graphic-live'),  # displays the data
-	html.Div(id='page-live-content'),
-	html.Br(),
-	dcc.Link('Go to historical data plotter', href='/apps/app_histo'),
-	html.Br(),
-	dcc.Link('Go back to home', href='/'),
 
+
+	dcc.Interval(id='live-plot-update', interval=5000, n_intervals=0),
+
+    html.Div([
+        html.Div([
+            html.H3('Live stream for the past {} hours'.format(hours_to_plot))
+            ], className='Title-center-header'),
+
+        html.Div([
+            html.H3(id='display-time')
+            ], className='Title-center'),
+
+        html.Div([
+    	   dcc.Graph(id='indicator-graphic-live-HV')
+           ], className='five columns live-plot'),  # displays HV data
+
+        html.Div([
+    	   dcc.Graph(id='indicator-graphic-live-dose')
+           ], className='five columns live-plot'),  # displays Dose
+
+    ], className='row graph-row'),
+
+    html.Hr(),
+
+    html.Div([
+        html.Div([
+            html.H3('Past 12 hours of data')
+            ], className='Title-center-header'),
+        html.Div([
+            html.Button(id='button-plot-today', n_clicks=0, children='Update')
+            ], className='button-update-today-plot'),
+        html.Div([
+    	   dcc.Graph(id='indicator-graphic-today')
+           ], className='ten columns live-plot'),  # displays HV data
+
+
+    ], className='row graph-row'),
+
+    # Hidden div inside the app that stores the data from the live db
+    html.Div(id='live-db-values', style={'display': 'none'}),
+
+    html.Div([
+    	html.Div(id='page-live-content'),
+    	html.Br(),
+    	dcc.Link('Go to historical data plotter', href='/apps/app_histo'),
+    	html.Br(),
+    	dcc.Link('Go back to home', href='/'),
+    ]),
 ])
 
 
@@ -61,34 +107,150 @@ layout = html.Div(children=[
 ################################################################################################################################################
 # LIVE callbacks
 ################################################################################################################################################
+# callback to update the label that indicates when the last query was exec
 @app.callback(
     dash.dependencies.Output('display-time', 'children'),
-    events=[dash.dependencies.Event('my-interval', 'interval')])
+    events=[dash.dependencies.Event('live-plot-update', 'interval')])
 def display_time():
     return u'Last update: {}'.format(str(datetime.datetime.now()))
 
-
+# callback to read the database and store in a json objective
 @app.callback(
-    dash.dependencies.Output('my-interval', 'interval'),
-    [dash.dependencies.Input('set-time', 'value')])
-def update_interval(value):
-    return value
+    dash.dependencies.Output('live-db-values', 'children'),
+    events=[dash.dependencies.Event('live-plot-update', 'interval')])
+def retrieve_data():
+     t = int(float(hours_to_plot) * 3600.0)
+     # some expensive clean data step
+     df_live_db = retrieveLiveData(t)  # retrieve the past 2 hrs
 
-# Display how many past seconds will be plotted
+     # more generally, this line would be
+     # json.dumps(cleaned_df)
+     return df_live_db.to_json(date_format='iso', orient='split')
+
+# callback to plot data HV
 @app.callback(
-	dash.dependencies.Output('display-selected-values', 'children'),
-	[dash.dependencies.Input('hours_to_plot', 'value')])
-def set_cities_options(hours_to_plot):
-	return u'Plotting past {} seconds...'.format(float(hours_to_plot)*3600.0)
+    dash.dependencies.Output('indicator-graphic-live-HV', 'figure'),
+    [dash.dependencies.Input('live-db-values', 'children')])
+def update_graph(jsonified_cleaned_data):
+
+    # more generally, this line would be
+    # json.loads(jsonified_cleaned_data)
+    df_live_db = pd.read_json(jsonified_cleaned_data, orient='split')
+
+    # plot each
+    # set a common x axis label!
+    traces = []
+    # traces.append(go.Scatter(
+    # 	x=df_live_db['date'],
+    # 	y=df_live_db['dose']/10,
+    # 	text='dose [0.1 muSv/hr]',
+    # 	# mode='markers',
+    # 	opacity=0.7,
+    # 	# marker={
+    # 	#     'size': 15,
+    # 	#     'line': {'width': 0.5, 'color': 'white'}
+    # 	# },
+    # 	name='dose [0.1 muSv/hr]'
+    # ))
+    # HV voltage
+    traces.append(go.Scatter(
+        x=df_live_db['date'],
+        y=df_live_db['HV_voltage'],
+        text='HV_voltage [x -1kV]',
+        line=go.scatter.Line(
+            color='red',
+            width=1.5
+        ),
+        # mode='markers',
+        opacity=0.7,
+        # marker={
+        #     'size': 15,
+        #     'line': {'width': 0.5, 'color': 'white'}
+        # },
+        name='HV_voltage [-kV]'
+    ))
+    # HV current
+    traces.append(go.Scatter(
+        x=df_live_db['date'],
+        y=df_live_db['HV_current']*100,
+        text='HV_current [x -100mA]',
+        line=go.scatter.Line(
+            color='orange',
+            width=1.5
+        ),
+        # mode='markers',
+        opacity=0.7,
+        # marker={
+        #     'size': 15,
+        #     'line': {'width': 0.5, 'color': 'white'}
+        # },
+        name='HV_current [-100 mA]'
+    ))
+
+    return {
+        'data': traces,
+        'layout': go.Layout(
+            xaxis={'type': 'date', 'title': 'Time'},
+            yaxis={'title': ' ', 'range': [0, 150]},
+            margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
+            legend={'x': 0, 'y': 1},
+            hovermode='closest'
+        )
+    }
+
+# callback to plot data dose
+@app.callback(
+    dash.dependencies.Output('indicator-graphic-live-dose', 'figure'),
+    [dash.dependencies.Input('live-db-values', 'children')])
+def update_graph(jsonified_cleaned_data):
+
+    # more generally, this line would be
+    # json.loads(jsonified_cleaned_data)
+    df_live_db = pd.read_json(jsonified_cleaned_data, orient='split')
+
+    # plot each
+    # set a common x axis label!
+    traces = []
+    traces.append(go.Scatter(
+    	x=df_live_db['date'],
+    	y=df_live_db['dose'],
+        line=go.scatter.Line(
+            color='#42C4F7',
+            width=1.0
+        ),
+    	text='dose [muSv/hr]',
+    	# mode='markers',
+    	opacity=0.7,
+    	# marker={
+    	#     'size': 15,
+    	#     'line': {'width': 0.5, 'color': 'white'}
+    	# },
+        mode='lines',
+    	name='dose [muSv/hr]'
+    ))
+
+
+    return {
+        'data': traces,
+        'layout': go.Layout(
+            xaxis={'type': 'date', 'title': 'Time'},
+            yaxis={'title': 'Dose [muSv/hr]', 'range': [0, 1000]},
+            margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
+            legend={'x': 0, 'y': 1},
+            hovermode='closest'
+        )
+    }
+
+################################################################################################################################################
+# Today callbacks
+################################################################################################################################################
 
 # callback to retrieve the data and plot it
 @app.callback(
-	dash.dependencies.Output('indicator-graphic-live', 'figure'),
-	[dash.dependencies.Input('hours_to_plot', 'value')],
-	events=[dash.dependencies.Event('my-interval', 'interval')]
-	)
-def update_figure(hours_to_plot):
-	t = int(float(hours_to_plot) * 3600.0)
+	dash.dependencies.Output('indicator-graphic-today', 'figure'),
+	[dash.dependencies.Input('button-plot-today', 'n_clicks')])
+def update_figure_today(n_clicks):
+	t = int(float(hours_to_plot_today) * 3600.0)
 	df_dose = retrieveLiveData(t)  # retrieve the past 2 hrs
 	# plot each
 	# set a common x axis label!
@@ -112,6 +274,10 @@ def update_figure(hours_to_plot):
 		x=df_dose['date'],
 		y=df_dose['HV_voltage'],
 		text='HV_voltage [-kV]',
+        line=go.scatter.Line(
+            color='red',
+            width=1.5
+        ),
 		# mode='markers',
 		opacity=0.7,
 		# marker={
@@ -125,6 +291,10 @@ def update_figure(hours_to_plot):
 		x=df_dose['date'],
 		y=df_dose['HV_current']*100,
 		text='HV_current [-100 mA]',
+        line=go.scatter.Line(
+            color='orange',
+            width=1.5
+        ),
 		# mode='markers',
 		opacity=0.7,
 		# marker={
