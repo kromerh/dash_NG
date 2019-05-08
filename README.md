@@ -43,6 +43,23 @@ At 4 am a mysql script will clear all those entries that have NULL everywhere an
 - Two different layouts:
   - Live: Reads the whole live database and plots high voltage, current, dose and neutron output
   - Historical: Chose a date from which you wish to display the high voltage, current, dose at that particular day. Every morning at 4 AM the live database is backed up into the historical one
+  
+  
+  
+# BROOKS Flow Meter
+
+## Pin connection
+
+| Number  | Color  | Description  |
+|:-:|:-:|:-:|
+| 1  | Red-blue  | Setpoint common  |
+| 2  | White-green  | Flow Signal 0-5 V  |
+| 5  | Blue  | Power Supply +13.5 to +27 VDC  |
+| 8  | Green  | Setpoint Signal 0 - 5 V  |
+| 9  | Gray-brown  | Power Supply common  |
+| 10  | Brown-green  | Flow Signal output common  |
+
+
 
 # ToDo
 
