@@ -19,14 +19,11 @@ def pi_read():
 
 while True:
 	try:
-		print("writing")
-		ser.write(b'21')
+		print("writing to serial")
+		ser.write(('2' + '\n').encode())
+		ser.flush()
 		sleep(1)
-
-		# Read the incoming data
-		incoming_data = pi_read()
-		print(incoming_data)
-		sleep(0.1)
+		print("   ")
 	except KeyboardInterrupt:
 		print('Ctrl + C. Exiting. Flushing serial connection.')
 		ser.flushInput()  #flush input buffer, discarding all its contents
