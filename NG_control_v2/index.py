@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output, State
 
 
 from app import app # calls the app
-from apps import app_live, app_histo
+from apps import app_flow_meter
 
 # Dash CSS
 
@@ -21,22 +21,20 @@ app.layout = html.Div([
 
 
 index_page = html.Div([
-	dcc.Link('Go to live data plotter', href='/apps/app_live'),
-	html.Br(),
-	dcc.Link('Go to historical data plotter', href='/apps/app_histo'),
+	dcc.Link('Go to flow meter control layout', href='/apps/app_flow_meter'),
+	html.Br()
 ])
 
 # Update the index
 @app.callback(dash.dependencies.Output('page-content', 'children'),
 			  [dash.dependencies.Input('url', 'pathname')])
 def display_page(pathname):
-	if pathname == '/apps/app_live':
-		return app_live.layout
-	elif pathname == '/apps/app_histo':
-		return app_histo.layout
+	if pathname == '/apps/app_flow_meter':
+		return app_flow_meter.base_layout
 	else:
 		return index_page
 	# You could also return a 404 "URL not found" page here
 
 if __name__ == '__main__':
-	app.run_server(debug=True, port=5000, host='0.0.0.0')
+	# app.run_server(debug=False, port=5000, host='0.0.0.0')
+	app.run_server(debug=True)
