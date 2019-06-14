@@ -15,28 +15,33 @@ def getFlowMeterControlValues(mysql_connection):
 	# DOSE
 	query = "SELECT * FROM flow_meter_control"
 	df = pd.read_sql(query, mysql_connection)
-	print(df.loc[:,'setpoint_voltage'].values)
 
-	return df
-
+	setpoint_voltage = df.loc[:,'setpoint_voltage'].values[0]
 
 
-print(getFlowMeterControlValues(mysql_connection))
-
-sys.exit()
-
-
+	return setpoint_voltage
 
 arduinoPort = '/dev/ttyACM0'
 ser = serial.Serial(arduinoPort, 9600)
 sleep(1)
-val = 0.5 # Below 32 everything in ASCII is gibberish
+# val = 0.5 # Below 32 everything in ASCII is gibberish
 while True:
 	try:
-		valueSend = str(val)
+		# SETPOINT VALUE OF FLOW METER
+		# read the database for the setpoint value
+		setpoint_voltage = getFlowMeterControlValues(mysql_connection)
+
+		# convert
+		valueSend = str(setpoint_voltage)
+
+		# send
 		ser.write(valueSend.encode()) # Convert the decimal number to ASCII then send it to the Arduino
+
 		print(valueSend.encode())
+
 		sleep(1) # Delay
+
+		# READING OF FLOW METER
 		valueRead = ser.readline(500)
 
 		print(valueRead) # Read the newest output from the Arduino
