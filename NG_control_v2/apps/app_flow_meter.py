@@ -8,8 +8,39 @@ import plotly.graph_objs as go
 import numpy as np
 import pandas as pd
 import datetime
+import pymysql
 
 from app import app
+
+################################################################################################################################################
+# function
+################################################################################################################################################
+def setFlowMeterControlValues(value):
+	"""
+	Sets the entry for the setpoint value in the database according to the user specified value
+	"""
+	# DOSE
+	mysql_connection = pymysql.connect(host="twofast-RPi3-0",  # your host
+					 user="writer",  # username
+					 passwd="heiko",  # password
+					 db="NG_twofast_DB", # name of the database
+					charset='utf8',
+					cursorclass=pymysql.cursors.DictCursor)
+
+
+	try:
+		with mysql_connection.cursor() as cursor:
+			# Create a new record
+			sql = "UPDATE flow_meter_control SET setpoint_voltage = (%s)"
+			cursor.execute(sql, (str(value)))
+
+		# connection is not autocommit by default. So you must commit to save
+		# your changes.
+		connection.commit()
+
+	finally:
+		connection.close()
+
 
 ################################################################################################################################################
 # base_layout
@@ -644,10 +675,12 @@ def flow_meter_setpoint_button(n_clicks, setpoint_value):
 		#sanity check that it is between 0 and 5
 		if (setpoint_value > 0.0) & (setpoint_value < 5.0):
 
-			# code here to send to RPi
+			# update field in the database
+			setFlowMeterControlValues(setpoint_value)
 
 			# set the value of the slider flow-meter-setpoint-slider"
 			setpoint_value = round(setpoint_value * 1000)
+
 			return setpoint_value
 	else:
 		return 2000
