@@ -9,12 +9,11 @@ mysql_connection = pymysql.connect(host="twofast-RPi3-0",  # your host
 					 passwd="heiko",  # password
 					 db="NG_twofast_DB", # name of the database
 					charset='utf8',
-					cursorclass=pymysql.cursors.DictCursor)  
+					cursorclass=pymysql.cursors.DictCursor)
 
 def getAvailableHistoricalDates():
-
 	# DOSE
-	query = "SELECT DISTINCT DATE(time) FROM data_dose"
+	query = "SELECT * FROM flow_meter_control"
 	df = pd.read_sql(query, mysql_connection)
 
 	print(df.head())
@@ -36,11 +35,11 @@ while True:
 		valueSend = str(val)
 		ser.write(valueSend.encode()) # Convert the decimal number to ASCII then send it to the Arduino
 		print(valueSend.encode())
-		sleep(1) # Delay 
+		sleep(1) # Delay
 		valueRead = ser.readline(500)
 
 		print(valueRead) # Read the newest output from the Arduino
-		sleep(0.5) # Delay 
+		sleep(0.5) # Delay
 		ser.flushInput()  #flush input buffer, discarding all its contents
 		ser.flushOutput() #flush output buffer, aborting current output and discard all that is in buffer
 	except KeyboardInterrupt:

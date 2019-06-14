@@ -586,8 +586,10 @@ base_layout = html.Div(
 		# Placeholder Divs
 		html.Div(
 			[
-				html.Div(id="flow-meter-readout-hold"),
-				dcc.Interval(id="flow-meter-readout-interval", interval=5000, n_intervals=0),
+				html.Div(id="flow-meter-readout-hold"), # readout of the mass flow rate
+				html.Div(id="flow-meter-setpoint-value"), # setpoint hold value
+				html.Div(id="flow-meter-setpoint-hold"), # boolean to identify if mass flow was sent to RPi
+				dcc.Interval(id="flow-meter-readout-interval", interval=1000, n_intervals=0),
 			],
 			style={"visibility": "hidden"},
 		),
@@ -621,34 +623,60 @@ def flow_meter_readout_switch(value):
 	else:
 		return "0"  # OFF
 
-# Sweep Capture Box Value Hold
+# Setpoint mass flow, store in hold
 @app.callback(
-	Output("flow-meter-readout-hold", "children"),
-	[Input("flow-meter-readout-switch", "value")]
+	Output("flow-meter-setpoint-value", "children"),
+	[Input("flow-meter-setpoint-numeric-input", "value")]
 )
-def flow_meter_readout_switch(value):
-	if value:
-		return "1"  # ON
+def flow_meter_setpoint_to_hold(setpoint_value):
+	print(setpoint_value)
+	return setpoint_value
+
+# Send hold setpoint mass flow to RPi
+@app.callback(
+	Output("flow-meter-setpoint-slider", "value"),
+	[Input("flow-meter-setpoint-button", "n_clicks")],
+	[State("flow-meter-setpoint-value", "children")]
+)
+def flow_meter_setpoint_button(n_clicks, setpoint_value):
+	if n_clicks:
+		print(f'Inside flow_meter_setpoint_button, n_clicks is {n_clicks}, setpoint_value is {setpoint_value}')
+		#sanity check that it is between 0 and 5
+		if (setpoint_value > 0.0) & (setpoint_value < 5.0):
+
+			# code here to send to RPi
+
+			# set the value of the slider flow-meter-setpoint-slider"
+			setpoint_value = round(setpoint_value * 1000)
+			return setpoint_value
 	else:
-		return "0"  # OFF
+		return 2000
+
 
 # Textarea Communication
 @app.callback(
 	Output("flow-meter-status-monitor", "value"),
 	[Input("flow-meter-readout-interval", "n_intervals")],
-	[State("flow-meter-readout-hold", "children")]
+	[State("flow-meter-readout-hold", "children"),
+	State("flow-meter-setpoint-value", "children")]
 )
-def flow_meter_text_area(intervals, state_flow_meter_readout_hold):
+def flow_meter_text_area(intervals,
+	flow_meter_readout_hold_state,
+	flow_meter_setpoint_value
+	):
 
-	if state_flow_meter_readout_hold == "1":
+	if flow_meter_readout_hold_state == "1":
 		state = "Readout on."
 	else:
 		state = "Readout off."
 
+	last_reading_mass_flow = 0
+
 	status = (
 		"-----------STATUS------------\n"
-		+ "Readout Status: "
-		+ state
+		+ "Readout status: " + str(state) + "\n"
+		+ "Last reading mass flow: " + str(last_reading_mass_flow) + "\n"
+		+ "flow_meter_setpoint_value: " + str(flow_meter_setpoint_value) + " V"
 	)
 
 	return status
