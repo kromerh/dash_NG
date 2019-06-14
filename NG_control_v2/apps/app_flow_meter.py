@@ -36,10 +36,11 @@ def setFlowMeterControlValues(value):
 
 		# connection is not autocommit by default. So you must commit to save
 		# your changes.
-		connection.commit()
+		mysql_connection.commit()
+		print(f'Updated setpoint_voltage {value} in flow_meter_control table.')
 
 	finally:
-		connection.close()
+		mysql_connection.close()
 
 
 ################################################################################################################################################
