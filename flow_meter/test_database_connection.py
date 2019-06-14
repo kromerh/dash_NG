@@ -4,15 +4,16 @@ import sys
 import pandas as pd
 import pymysql
 
-mysql_connection = pymysql.connect(host="twofast-RPi3-0",  # your host
+
+def getFlowMeterControlValues():
+	# DOSE
+	mysql_connection = pymysql.connect(host="twofast-RPi3-0",  # your host
 					 user="writer",  # username
 					 passwd="heiko",  # password
 					 db="NG_twofast_DB", # name of the database
 					charset='utf8',
 					cursorclass=pymysql.cursors.DictCursor)
 
-def getFlowMeterControlValues(mysql_connection):
-	# DOSE
 	query = "SELECT * FROM flow_meter_control"
 	df = pd.read_sql(query, mysql_connection)
 
