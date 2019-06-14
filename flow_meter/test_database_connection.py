@@ -11,16 +11,16 @@ mysql_connection = pymysql.connect(host="twofast-RPi3-0",  # your host
 					charset='utf8',
 					cursorclass=pymysql.cursors.DictCursor)
 
-def getAvailableHistoricalDates():
+def getFlowMeterControlValues(mysql_connection):
 	# DOSE
 	query = "SELECT * FROM flow_meter_control"
-	df = pd.read_sql(query, mysql_connection)
+	print(df.loc['setpoint_voltage'].values)
 
-	print(df.head())
+	return df
 
 
 
-print(getAvailableHistoricalDates())
+print(getFlowMeterControlValues(mysql_connection))
 
 sys.exit()
 
