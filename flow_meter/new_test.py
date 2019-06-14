@@ -10,11 +10,13 @@ while True:
 		valueSend = str(val)
 		ser.write(valueSend.encode()) # Convert the decimal number to ASCII then send it to the Arduino
 		print(valueSend.encode())
-		sleep(0.5) # Delay 
+		sleep(1) # Delay 
 		valueRead = ser.readline(500)
 
 		print(valueRead) # Read the newest output from the Arduino
 		sleep(0.5) # Delay 
+		ser.flushInput()  #flush input buffer, discarding all its contents
+		ser.flushOutput() #flush output buffer, aborting current output and discard all that is in buffer
 	except KeyboardInterrupt:
 		print('Ctrl + C. Exiting. Flushing serial connection.')
 		ser.flushInput()  #flush input buffer, discarding all its contents

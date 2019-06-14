@@ -16,7 +16,9 @@ float V1 = 0.0;  // mass flow
 // *** Setpoint of the mass flow
 // ***********************************
 int outputPinAnalog1 = 9; // Setpoint of the mass flow PIN
-int V_out = 0;  // Setpoint of the mass flow as INTEGER from twofast-rpi3-4
+float V_out = 0;  // Setpoint of the mass flow as INTEGER from twofast-rpi3-4
+float V_out_raw = 0;  // Setpoint of the mass flow as INTEGER from twofast-rpi3-4
+
 // ***********************************
 // *** Time
 // ***********************************
@@ -77,15 +79,27 @@ void readAnalog(){
 void loop() {
   readAnalog();
   unsigned long currentMillis = millis();
+  // ***********************************
+  // *** Setpoint of the mass flow
+  // ***********************************
   if (Serial.available() > 0){  // Looking for incoming data
-    V_out = Serial.read() - '0';  //Reading the data
-    V_out = V_out*(256/5);
+    V_out_raw = Serial.parseFloat();
+    V_out = (V_out_raw + 0.0) * 256/5;  // 256/5 = 51
     analogWrite(outputPinAnalog1, V_out);  // Setpoing mass flow meter
   }  
+  // ***********************************
+  // *** Reading of the mass flow
+  // ***********************************
   if (currentMillis - previousMillis >= interval) {
     // save the last time executed
     //Serial.println(currentMillis - previousMillis);
-    Serial.println(V1);  // Voltage READING mass flow meter
+    Serial.print("V_1 ");  // mass flow reading
+    Serial.print(V1);
+    Serial.print(", ");
+    Serial.print(V_out_raw);
+    Serial.print(", ");
+    Serial.print("V_out ");  // mass flow setpoint x 256/5
+    Serial.println(V_out);
     previousMillis = currentMillis;
     // print: V1 V_out
     delay(50);
