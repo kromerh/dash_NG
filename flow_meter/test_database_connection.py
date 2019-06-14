@@ -31,7 +31,7 @@ while True:
 	try:
 		# SETPOINT VALUE OF FLOW METER
 		# read the database for the setpoint value
-		setpoint_voltage = getFlowMeterControlValues(mysql_connection)
+		setpoint_voltage = getFlowMeterControlValues()
 
 		# convert
 		valueSend = str(setpoint_voltage)
