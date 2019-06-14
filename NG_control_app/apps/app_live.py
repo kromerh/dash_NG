@@ -109,15 +109,15 @@ layout = html.Div(children=[
 ################################################################################################################################################
 # callback to update the label that indicates when the last query was exec
 @app.callback(
-    dash.dependencies.Output('display-time', 'children'),
-    events=[dash.dependencies.Event('live-plot-update', 'interval')])
+    Output('display-time', 'children'),
+    [Input('live-plot-update', 'interval')])
 def display_time():
     return u'Last update: {}'.format(str(datetime.datetime.now()))
 
 # callback to read the database and store in a json objective
 @app.callback(
-    dash.dependencies.Output('live-db-values', 'children'),
-    events=[dash.dependencies.Event('live-plot-update', 'interval')])
+    Output('live-db-values', 'children'),
+    [Input('live-plot-update', 'interval')])
 def retrieve_data():
      t = int(float(hours_to_plot) * 3600.0)
      # some expensive clean data step
