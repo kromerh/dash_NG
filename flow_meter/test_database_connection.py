@@ -14,6 +14,7 @@ mysql_connection = pymysql.connect(host="twofast-RPi3-0",  # your host
 def getFlowMeterControlValues(mysql_connection):
 	# DOSE
 	query = "SELECT * FROM flow_meter_control"
+	df = pd.read_sql(query, mysql_connection)
 	print(df.loc['setpoint_voltage'].values)
 
 	return df
