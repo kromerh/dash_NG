@@ -18,6 +18,7 @@ def getFlowMeterControlValues(mysql_connection):
 
 	setpoint_voltage = df.loc[:,'setpoint_voltage'].values[0]
 
+	print(setpoint_voltage)
 
 	return setpoint_voltage
 
