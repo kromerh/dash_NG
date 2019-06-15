@@ -37,3 +37,12 @@ CREATE TABLE flow_meter_readout_storage (
 # Primary key
 ALTER TABLE flow_meter_readout_storage
 ADD COLUMN id SERIAL PRIMARY KEY;
+
+
+
+
+# Reset a table
+DELETE FROM flow_meter_readout_live;
+
+# Reset a table
+ALTER TABLE flow_meter_readout_live AUTO_INCREMENT = 0 # set to 0 for completely fresh table
