@@ -68,12 +68,14 @@ while True:
 		# READING OF FLOW METER
 		valueRead = ser.readline(500) # b'V_1 1.30, 4.20, V_out 215.04\r\n'
 
-		print(valueRead) # Read the newest output from the Arduino
-		voltageStr = str(valueRead).split(',')[0]
-		print(voltageStr)
-		voltage = re.findall(r'V_1 (.+)', voltageStr)[0]
+		print(str(valueRead)) # Read the newest output from the Arduino
+		voltageStr = str(valueRead).split(',')
+		if len(voltageStr) > 0:
+			voltageStr = voltageStr[0]
+			print(voltageStr)
+			voltage = re.findall(r'V_1 (.+)', voltageStr)[0]
 
-		saveFlowMeterVoltageToDB(valueRead) # save into DB
+			saveFlowMeterVoltageToDB(valueRead) # save into DB
 		sleep(0.5) # Delay
 		ser.flushInput()  #flush input buffer, discarding all its contents
 		ser.flushOutput() #flush output buffer, aborting current output and discard all that is in buffer
