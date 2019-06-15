@@ -9,8 +9,47 @@ import numpy as np
 import pandas as pd
 import datetime
 import pymysql
+import datetime
+import time
 
 from app import app
+
+
+state_dic = {'state': "none"}
+
+################################################################################################################################################
+# paramiko - REMOTE SSH
+################################################################################################################################################
+import paramiko
+
+host="twofast-RPi3-4"
+user="pi"
+pwd="axfbj1122!"
+paramiko.util.log_to_file('ssh.log') # sets up logging
+
+def startFlowMeterReadout():
+	print('Starting flow-meter readout...')
+	client = paramiko.SSHClient()
+	client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+	client.load_system_host_keys()
+	client.connect(host, username=user, password=pwd)
+	stdin, stdout, stderr = client.exec_command('/home/pi/Documents/flow_meter/dash_NG/flow_meter/run_readout_from_remote.sh')
+	output = stdout.readlines()
+	print(output)
+	client.close()
+
+def stopAllPython():
+	print('Stopping all pythons...')
+	client = paramiko.SSHClient()
+	client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+	client.load_system_host_keys()
+	client.connect(host, username=user, password=pwd)
+	stdin, stdout, stderr = client.exec_command('/home/pi/Documents/flow_meter/dash_NG/flow_meter/stop_all_python.sh')
+	output = stdout.readlines()
+	print(output)
+	client.close()
+
+
 
 ################################################################################################################################################
 # function
@@ -24,8 +63,8 @@ def setFlowMeterControlValues(value):
 					 user="writer",  # username
 					 passwd="heiko",  # password
 					 db="NG_twofast_DB", # name of the database
-					charset='utf8',
-					cursorclass=pymysql.cursors.DictCursor)
+					 charset='utf8',
+					 cursorclass=pymysql.cursors.DictCursor)
 
 
 	try:
@@ -42,6 +81,30 @@ def setFlowMeterControlValues(value):
 	finally:
 		mysql_connection.close()
 
+def readFlowMeterVoltage(pastSeconds=60): # read past 60secs by default
+	"""
+	Read the flow meter voltage read from the database
+	"""
+
+	db = pymysql.connect(host="twofast-RPi3-0",  # your host
+						 user="doseReader",  # username
+						 passwd="heiko",  # password
+						 db="NG_twofast_DB",  # name of the database
+						 charset='utf8',
+						 cursorclass=pymysql.cursors.DictCursor)
+
+
+
+	try:
+		query = """SELECT * FROM flow_meter_readout_live ORDER BY id DESC LIMIT {}""".format(pastSeconds)
+		df = pd.read_sql(query, db)
+
+
+	except:
+		print('Error in plotFlowMeterVoltage')
+
+
+	return df
 
 ################################################################################################################################################
 # base_layout
@@ -168,30 +231,50 @@ base_layout = html.Div(
 						),
 						html.Hr(),
 						html.Div(
-							children=[
-								daq.ToggleSwitch(
-									id="flow-meter-readout-switch",
-									label=["Off", "On"],
-									color="#FF5E5E",
-									className="one columns",
-									size=32,
-									value=False,
-									style={
-										"position": "relative",
-										"left": "15%",
-										"bottom": "2px",
-										"marginBottom": "1%",
-										"paddingTop": "2%"
-									},
+							[
+								html.Div(
+									[
+										daq.StopButton(
+											"Start",
+											id='flow-meter-readout-start-button',
+											n_clicks=0,
+											style={
+												"width": "20%",
+												"display": "flex",
+												"justify-content": "center",
+												"align-items": "center",
+												"marginLeft": "2%",
+												"marginRight": "2%",
+												"marginBottom": "5%",
+											}
+										),
+										daq.StopButton(
+											"Stop",
+											id='flow-meter-readout-stop-button',
+											n_clicks=0,
+											style={
+												"width": "20%",
+												"color": "red",
+												"display": "flex",
+												"justify-content": "center",
+												"align-items": "center",
+												"marginLeft": "2%",
+												"marginRight": "2%",
+												"marginBottom": "5%",
+											}
+										)
+									],
+									className="three columns",
+									style={"marginLeft": "13%"},
 								),
 								html.H5(
 									"Reading Mass Flow vs. Time",
 									style={
 										"textAlign": "Center",
 										# "marginBottom": "10%",
-										# "marginTop": "2%",
+										# "marginTop": "10%",
 									},
-									)
+								)
 							],
 						),
 						html.Div(
@@ -199,34 +282,8 @@ base_layout = html.Div(
 								id="flow-meter-readout-graph",
 								style={
 									"height": "254px",
-									"marginTop": "5%",
+									"marginTop": "15%",
 									},
-								figure={
-									"data": [
-										go.Scatter(
-											x=[],
-											y=[],
-											mode="lines",
-											marker={"size": 6},
-											name="Voltage (V)",
-										),
-										go.Scatter(
-											x=[],
-											y=[],
-											mode="lines",
-											marker={"size": 6},
-											name="Flow rate (ml/min)",
-										),
-									],
-									"layout": go.Layout(
-										xaxis={
-											"title": "Time (s)",
-											"autorange": True,
-										},
-										yaxis={"title": "Value"},
-										margin={"l": 70, "b": 100, "t": 0, "r": 25},
-									),
-								},
 							),
 						),
 						html.Hr(),
@@ -618,10 +675,13 @@ base_layout = html.Div(
 		# Placeholder Divs
 		html.Div(
 			[
-				html.Div(id="flow-meter-readout-hold"), # readout of the mass flow rate
-				html.Div(id="flow-meter-setpoint-value"), # setpoint hold value
-				html.Div(id="flow-meter-setpoint-hold"), # boolean to identify if mass flow was sent to RPi
 				dcc.Interval(id="flow-meter-readout-interval", interval=1000, n_intervals=0),
+				html.Div(id="flow-meter-readout-start-time"), # start time of mass flow reading from database
+				html.Div(id="flow-meter-readout-stop-time"), # stop time of mass flow reading from database
+				html.Div(id="flow-meter-readout-command-string"), # start and stop readout of mass flow reading
+				html.Div(id="flow-meter-readout-running-time"), # running readout of mass flow reading
+				html.Div(id="flow-meter-setpoint-value"), # setpoint hold value
+				html.Div(id='flow-meter-readout-values'), # Hidden div inside the app that stores the data from the live db
 			],
 			style={"visibility": "hidden"},
 		),
@@ -644,16 +704,62 @@ base_layout = html.Div(
 ################################################################################################################################################
 # callbacks
 ################################################################################################################################################
-# Sweep Capture Box Value Hold
+# Start  the flow meter readout from the database
 @app.callback(
-	Output("flow-meter-readout-hold", "children"),
-	[Input("flow-meter-readout-switch", "value")]
+	Output("flow-meter-readout-start-time", "children"),
+	[Input("flow-meter-readout-start-button", "n_clicks")]
 )
-def flow_meter_readout_switch(value):
-	if value:
-		return "1"  # ON
-	else:
-		return "0"  # OFF
+def flow_meter_start_readout(n_clicks):
+	# print('start')
+	# print(n_clicks)
+	if n_clicks >= 1:
+		print('Starting flow-meter readout...')
+		client = paramiko.SSHClient()
+		client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+		client.load_system_host_keys()
+		client.connect(host, username=user, password=pwd)
+		stdin, stdout, stderr = client.exec_command('/home/pi/Documents/flow_meter/dash_NG/flow_meter/run_readout_from_remote.sh')
+		client.close()
+
+		return time.time()
+	return 0.0
+
+# Stop the flow meter readout from the database
+@app.callback(
+	Output("flow-meter-readout-stop-time", "children"),
+	[Input("flow-meter-readout-stop-button", "n_clicks")]
+)
+def flow_meter_stop_readout(n_clicks):
+	# print('stop')
+	# print(n_clicks)
+	if n_clicks >= 1:
+		print('Stopping all pythons...')
+		client = paramiko.SSHClient()
+		client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+		client.load_system_host_keys()
+		client.connect(host, username=user, password=pwd)
+		stdin, stdout, stderr = client.exec_command('/home/pi/Documents/flow_meter/dash_NG/flow_meter/stop_all_python.sh')
+
+
+		client.close()
+		return time.time()
+	return 1.0
+
+# Button Control Panel
+@app.callback(
+	Output("flow-meter-readout-command-string", "children"),
+	[Input("flow-meter-readout-start-time", "children"),
+	Input("flow-meter-readout-stop-time", "children")]
+)
+def command_string(start, stop):
+	master_command = {
+		"START": start,
+		"STOP": stop,
+	}
+	# print(master_command)
+	recent_command = max(master_command, key=master_command.get)
+	return recent_command
+
 
 # Setpoint mass flow, store in hold
 @app.callback(
@@ -661,7 +767,7 @@ def flow_meter_readout_switch(value):
 	[Input("flow-meter-setpoint-numeric-input", "value")]
 )
 def flow_meter_setpoint_to_hold(setpoint_value):
-	print(setpoint_value)
+	# print(setpoint_value)
 	return setpoint_value
 
 # Send hold setpoint mass flow to RPi
@@ -687,30 +793,130 @@ def flow_meter_setpoint_button(n_clicks, setpoint_value):
 		return 2000
 
 
+# callback to read the database and store in a json objective
+@app.callback(
+	Output('flow-meter-readout-values', 'children'),
+	[Input('flow-meter-readout-interval', 'n_intervals')],
+	[State("flow-meter-readout-command-string", "children")]
+	)
+def retrieve_data(intervals, command_string):
+	# print(command_string)
+	if command_string == 'START':
+		 # some expensive clean data step
+		 df = readFlowMeterVoltage(300)  # retrieve the past 60 seconds
+		 # print('Inside retrieve_data')
+		 # print(df)
+		 # more generally, this line would be
+		 # json.dumps(cleaned_df)
+		 state_dic['state'] = 'plotting'
+
+		 return df.to_json(date_format='iso', orient='split')
+	else:
+		 state_dic['state'] = 'not plotting'
+
 # Textarea Communication
 @app.callback(
 	Output("flow-meter-status-monitor", "value"),
 	[Input("flow-meter-readout-interval", "n_intervals")],
-	[State("flow-meter-readout-hold", "children"),
-	State("flow-meter-setpoint-value", "children")]
+	[State("flow-meter-setpoint-value", "children"),
+	State("flow-meter-readout-command-string", "children"),
+	State("flow-meter-readout-values", "children")]
 )
 def flow_meter_text_area(intervals,
-	flow_meter_readout_hold_state,
-	flow_meter_setpoint_value
+	flow_meter_setpoint_value,
+	command_string,
+	json_data
 	):
 
-	if flow_meter_readout_hold_state == "1":
-		state = "Readout on."
+	# if command_string == 'START':
+	# 	startFlowMeterReadout()
+	# if command_string == 'STOP':
+	# 	stopAllPython()
+	if state_dic['state'] == "plotting":
+		# print("plotting")
+		df = pd.read_json(json_data, orient='split')
+		last_db_reading = df.loc[0,'time']
+		# print(len(df))
 	else:
-		state = "Readout off."
+		last_db_reading = -1
 
-	last_reading_mass_flow = 0
 
 	status = (
 		"-----------STATUS------------\n"
-		+ "Readout status: " + str(state) + "\n"
-		+ "Last reading mass flow: " + str(last_reading_mass_flow) + "\n"
+		+ "Readout status: " + str(command_string) + "\n"
+		+ "Last reading mass flow received: " + str(last_db_reading) + "\n"
 		+ "flow_meter_setpoint_value: " + str(flow_meter_setpoint_value) + " V"
 	)
 
 	return status
+
+
+# Flow meter Graph
+@app.callback(
+	Output("flow-meter-readout-graph", "figure"),
+	[Input("flow-meter-readout-values", "children")]
+)
+# def plot_graph_data(df, figure, command, start, start_button, PID):
+def plot_graph_data(json_data):
+
+	print(state_dic)
+	traces = []
+
+	try:
+		df = pd.read_json(json_data, orient='split')
+		print('inside plot_graph_data, read df')
+		# print(df.iloc[0,:])
+		traces.append(go.Scatter(
+			x=df['time'],
+			y=df['read_voltage'],
+			line=go.scatter.Line(
+				color='#42C4F7',
+				width=5.0
+			),
+			text='Voltage [V]',
+			# mode='markers',
+			mode='lines',
+			opacity=1,
+			marker={
+				'size': 15,
+				'line': {'width': 0.5, 'color': 'white'}
+			},
+
+			name='Voltage [V]'
+		))
+
+	except:
+		traces.append(go.Scatter(
+			x=[],
+			y=[],
+			line=go.scatter.Line(
+				color='#42C4F7',
+				width=1.0
+			),
+			text='dose [muSv/hr]',
+			# mode='markers',
+			opacity=1,
+			marker={
+				 'size': 15,
+				 'line': {'width': 1, 'color': '#42C4F7'}
+			},
+			mode='lines',
+			name='dose [muSv/hr]'
+		))
+
+
+
+
+
+
+
+	return {
+		'data': traces,
+		'layout': go.Layout(
+			xaxis={'title': 'Time'},
+			yaxis={'title': 'Voltage [V]'},
+			margin={'l': 100, 'b': 100, 't': 10, 'r': 10},
+			legend={'x': 0, 'y': 1},
+			hovermode='closest'
+		)
+	}
