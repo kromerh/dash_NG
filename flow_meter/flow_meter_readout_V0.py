@@ -70,10 +70,16 @@ while True:
 
 		print(str(valueRead)) # Read the newest output from the Arduino
 		voltageStr = str(valueRead).split(',')
-		if len(voltageStr) > 0:
-			voltageStr = voltageStr[0]
-			print(voltageStr)
-			voltage = re.findall(r'V_1 (.+)', voltageStr)[0]
+
+		voltageStr = voltageStr[0]
+
+		print(voltageStr)
+
+		t = re.findall(r'V_1 (.+)', voltageStr)
+
+		if len(t)>0:
+
+			voltage = t[0]
 
 			saveFlowMeterVoltageToDB(valueRead) # save into DB
 		sleep(0.5) # Delay
