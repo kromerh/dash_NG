@@ -61,7 +61,7 @@ while True:
 		# send
 		ser.write(valueSend.encode()) # Convert the decimal number to ASCII then send it to the Arduino
 
-		print("Sending to Arduino:" + valueSend.encode())
+		print("Sending to Arduino:" + str(valueSend.encode()))
 
 		sleep(1) # Delay
 
