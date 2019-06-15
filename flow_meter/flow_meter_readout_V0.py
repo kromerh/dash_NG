@@ -68,7 +68,7 @@ while True:
 		# READING OF FLOW METER
 		valueRead = ser.readline(500) # b'V_1 1.30, 4.20, V_out 215.04\r\n'
 
-		print(f'Raw reading from Arduino: {str(valueRead)}') # Read the newest output from the Arduino
+		print('Raw reading from Arduino:' + str(valueRead)) # Read the newest output from the Arduino
 		voltageStr = str(valueRead).split(',')
 
 		voltageStr = voltageStr[0]
