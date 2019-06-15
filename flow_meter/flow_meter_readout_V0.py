@@ -19,7 +19,7 @@ def getFlowMeterControlValues():
 
 	setpoint_voltage = df.loc[:,'setpoint_voltage'].values[0]
 
-	print(setpoint_voltage)
+	# print(setpoint_voltage)
 
 	return setpoint_voltage
 
@@ -63,7 +63,7 @@ while True:
 
 		print("Sending to Arduino:" + str(valueSend.encode()))
 
-		sleep(1) # Delay
+		sleep(0.5) # Delay
 
 		# READING OF FLOW METER
 		valueRead = ser.readline(500) # b'V_1 1.30, 4.20, V_out 215.04\r\n'
@@ -79,7 +79,7 @@ while True:
 
 		if len(t) > 0:
 			voltage = t[0]
-			print(voltage)
+			# print(voltage)
 			saveFlowMeterVoltageToDB(voltage) # save into DB
 
 		sleep(0.5) # Delay
