@@ -61,27 +61,27 @@ while True:
 		# send
 		ser.write(valueSend.encode()) # Convert the decimal number to ASCII then send it to the Arduino
 
-		print(valueSend.encode())
+		print(f'Sending to Ardino: {valueSend.encode()}')
 
 		sleep(1) # Delay
 
 		# READING OF FLOW METER
 		valueRead = ser.readline(500) # b'V_1 1.30, 4.20, V_out 215.04\r\n'
 
-		print(str(valueRead)) # Read the newest output from the Arduino
+		print(f'Raw reading from Arduino: {str(valueRead)}') # Read the newest output from the Arduino
 		voltageStr = str(valueRead).split(',')
 
 		voltageStr = voltageStr[0]
 
-		print(voltageStr)
+
 
 		t = re.findall(r'V_1 (.+)', voltageStr)
 
-		if len(t)>0:
-
+		if len(t) > 0:
 			voltage = t[0]
+			print(voltage)
+			saveFlowMeterVoltageToDB(voltage) # save into DB
 
-			saveFlowMeterVoltageToDB(valueRead) # save into DB
 		sleep(0.5) # Delay
 		ser.flushInput()  #flush input buffer, discarding all its contents
 		ser.flushOutput() #flush output buffer, aborting current output and discard all that is in buffer
