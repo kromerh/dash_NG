@@ -3,7 +3,7 @@ import serial
 import sys
 import pandas as pd
 import pymysql
-
+import re
 
 def getFlowMeterControlValues():
 	# DOSE
@@ -66,9 +66,11 @@ while True:
 		sleep(1) # Delay
 
 		# READING OF FLOW METER
-		valueRead = ser.readline(500)
+		valueRead = ser.readline(500) # b'V_1 1.30, 4.20, V_out 215.04\r\n'
 
 		print(valueRead) # Read the newest output from the Arduino
+		voltageStr = str(valueRead).split(',')[0]
+		voltage = re.findall(r'V_1 (.+)', voltageStr)[0]
 
 		saveFlowMeterVoltageToDB(valueRead) # save into DB
 		sleep(0.5) # Delay
