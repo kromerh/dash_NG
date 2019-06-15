@@ -11,8 +11,8 @@ def getFlowMeterControlValues():
 					 user="writer",  # username
 					 passwd="heiko",  # password
 					 db="NG_twofast_DB", # name of the database
-					charset='utf8',
-					cursorclass=pymysql.cursors.DictCursor)
+					 charset='utf8',
+					 cursorclass=pymysql.cursors.DictCursor)
 
 	query = "SELECT * FROM flow_meter_control"
 	df = pd.read_sql(query, mysql_connection)
@@ -22,6 +22,28 @@ def getFlowMeterControlValues():
 	print(setpoint_voltage)
 
 	return setpoint_voltage
+
+
+db = pymysql.connect(host="twofast-RPi3-0",  # your host
+					 user="writer",  # username
+					 passwd="heiko",  # password
+					 db="NG_twofast_DB", # name of the database
+					 charset='utf8',
+					 cursorclass=pymysql.cursors.DictCursor)
+
+arduinoPort = '/dev/ttyACM0'  # might need to be changed if another arduino is plugged in or other serial
+serialArduino = serial.Serial(port=arduinoPort, baudrate=9600)
+
+def saveFlowMeterVoltageToDB(voltage):
+	# Create a Cursor object to execute queries.
+	cur = db.cursor()
+	try:
+		cur.execute("""INSERT INTO flow_meter_readout_live (read_voltage) VALUES (%s)""", (voltage))
+	except:
+		cur.rollback()
+
+	db.commit()
+	cur.close()
 
 arduinoPort = '/dev/ttyACM0'
 ser = serial.Serial(arduinoPort, 9600)
@@ -47,6 +69,8 @@ while True:
 		valueRead = ser.readline(500)
 
 		print(valueRead) # Read the newest output from the Arduino
+
+		saveFlowMeterVoltageToDB(valueRead) # save into DB
 		sleep(0.5) # Delay
 		ser.flushInput()  #flush input buffer, discarding all its contents
 		ser.flushOutput() #flush output buffer, aborting current output and discard all that is in buffer
