@@ -713,13 +713,7 @@ def flow_meter_start_readout(n_clicks):
 	# print('start')
 	# print(n_clicks)
 	if n_clicks >= 1:
-		print('Starting flow-meter readout...')
-		client = paramiko.SSHClient()
-		client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-		client.load_system_host_keys()
-		client.connect(host, username=user, password=pwd)
-		stdin, stdout, stderr = client.exec_command('/home/pi/Documents/flow_meter/dash_NG/flow_meter/run_readout_from_remote.sh')
-		client.close()
+
 
 		return time.time()
 	return 0.0
@@ -733,13 +727,6 @@ def flow_meter_stop_readout(n_clicks):
 	# print('stop')
 	# print(n_clicks)
 	if n_clicks >= 1:
-		print('Stopping all pythons...')
-		client = paramiko.SSHClient()
-		client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-		client.load_system_host_keys()
-		client.connect(host, username=user, password=pwd)
-		stdin, stdout, stderr = client.exec_command('/home/pi/Documents/flow_meter/dash_NG/flow_meter/stop_all_python.sh')
-
 
 		client.close()
 		return time.time()
