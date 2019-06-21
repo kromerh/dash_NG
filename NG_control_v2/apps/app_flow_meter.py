@@ -7,47 +7,17 @@ import dash
 import plotly.graph_objs as go
 import numpy as np
 import pandas as pd
-import datetime
+
 import pymysql
-import datetime
+
 import time
+from datetime import datetime
 
 from app import app
 
 
 state_dic = {'state': "none"}
 
-################################################################################################################################################
-# paramiko - REMOTE SSH
-################################################################################################################################################
-import paramiko
-
-host="twofast-RPi3-4"
-user="pi"
-pwd="axfbj1122!"
-paramiko.util.log_to_file('ssh.log') # sets up logging
-
-def startFlowMeterReadout():
-	print('Starting flow-meter readout...')
-	client = paramiko.SSHClient()
-	client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-	client.load_system_host_keys()
-	client.connect(host, username=user, password=pwd)
-	stdin, stdout, stderr = client.exec_command('/home/pi/Documents/flow_meter/dash_NG/flow_meter/run_readout_from_remote.sh')
-	output = stdout.readlines()
-	print(output)
-	client.close()
-
-def stopAllPython():
-	print('Stopping all pythons...')
-	client = paramiko.SSHClient()
-	client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-	client.load_system_host_keys()
-	client.connect(host, username=user, password=pwd)
-	stdin, stdout, stderr = client.exec_command('/home/pi/Documents/flow_meter/dash_NG/flow_meter/stop_all_python.sh')
-	output = stdout.readlines()
-	print(output)
-	client.close()
 
 
 
@@ -713,8 +683,6 @@ def flow_meter_start_readout(n_clicks):
 	# print('start')
 	# print(n_clicks)
 	if n_clicks >= 1:
-
-
 		return time.time()
 	return 0.0
 
@@ -727,8 +695,6 @@ def flow_meter_stop_readout(n_clicks):
 	# print('stop')
 	# print(n_clicks)
 	if n_clicks >= 1:
-
-		client.close()
 		return time.time()
 	return 1.0
 
@@ -823,7 +789,8 @@ def flow_meter_text_area(intervals,
 		# print("plotting")
 		df = pd.read_json(json_data, orient='split')
 		last_db_reading = df.loc[0,'time']
-		# print(len(df))
+		last_db_reading = pd.to_datetime(last_db_reading)
+		last_db_reading = last_db_reading.strftime("%Y-%m-%d, %H:%M:%S")
 	else:
 		last_db_reading = -1
 
@@ -858,16 +825,12 @@ def plot_graph_data(json_data):
 			y=df['read_voltage'],
 			line=go.scatter.Line(
 				color='#42C4F7',
-				width=5.0
+				# width=2.0
 			),
 			text='Voltage [V]',
 			# mode='markers',
-			mode='lines',
+			mode='lines+markers',
 			opacity=1,
-			marker={
-				'size': 15,
-				'line': {'width': 0.5, 'color': 'white'}
-			},
 
 			name='Voltage [V]'
 		))
