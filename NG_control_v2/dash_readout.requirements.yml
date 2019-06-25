@@ -1,7 +1,6 @@
 name: dash_readout
 channels:
   - conda-forge
-  - http://conda-pkg.intranet.psi.ch
   - defaults
 dependencies:
   - asn1crypto=0.24.0=py37_1003
