@@ -103,26 +103,17 @@ base_layout = html.Div(
 							[
 								html.H3(
 									"Flow Meter Control",
-									style={"textAlign": "Center"},
-									# className="seven columns",
+									style={
+										"textAlign": "Center",
+										"paddingBottom": "4.5%",
+										"border-radius": "1px",
+										"border-width": "5px",
+										"border-bottom": "1px solid rgb(216, 216, 216)",
+									},
 								),
-								# daq.StopButton(
-								# 	id="start-stop",
-								# 	label="D2 flow",
-								# 	className="five columns",
-								# 	n_clicks=0,
-								# 	style={
-								# 		"paddingTop": "3%",
-								# 		"paddingBottom": "3%",
-								# 		"display": "flex",
-								# 		"justify-content": "center",
-								# 		"align-items": "center",
-								# 	},
-								# ),
 							],
 							className="row",
 						),
-						html.Hr(),
 						html.Div(
 							children=[
 								html.H5(
@@ -296,7 +287,7 @@ base_layout = html.Div(
 				html.Div(
 					[
 						html.H3(
-							"Start Settings",
+							"Microwave Generator Control",
 							style={
 								"textAlign": "Center",
 								"paddingBottom": "4.5%",
@@ -305,13 +296,180 @@ base_layout = html.Div(
 								"border-bottom": "1px solid rgb(216, 216, 216)",
 							},
 						),
-						daq.ToggleSwitch(
-							id="pre-settings",
-							label=["Not Set", "Set"],
-							color="#FF5E5E",
-							size=32,
-							value=False,
-							style={"marginBottom": "1%", "paddingTop": "2%"},
+						html.H5(
+							"Status",
+							style={
+								"textAlign": "Center",
+								# "paddingTop": "2.5%",
+								"marginBottom": "0.1%",
+							},
+						),
+						html.Div(
+							[
+								html.Div(
+									[
+										daq.Indicator(
+											id='microwave-24V-indicator',
+											value=False,
+											color="red",
+											label="24V Relais",
+											labelPosition="bottom"
+										)
+									],
+									className='three columns', style={'margin-left':'15%','margin-right':'-5%','margin-bottom': '5px', 'margin-top': '15px'}
+									# className='two columns', style={'margin-bottom': '5px', 'margin-top': '15px'}
+								),
+								html.Div(
+									[
+										daq.Indicator(
+											id='microwave-5V-indicator',
+											value=False,
+											color="red",
+											label="5V Relais",
+											labelPosition="bottom"
+										),
+									],
+									className='two columns', style={'margin-bottom': '5px', 'margin-top': '15px'}
+								),
+								html.Div(
+									[
+										daq.Indicator(
+											id='microwave-temp-indicator',
+											value=False,
+											color="red",
+											label="Temperature",
+											labelPosition="bottom"
+										),
+									],
+									className='two columns', style={'margin-bottom': '5px', 'margin-top': '15px'}
+								),
+								html.Div(
+									[
+										daq.Indicator(
+											id='microwave-D2flow-indicator',
+											value=False,
+											color="red",
+											label="D2 flow",
+											labelPosition="bottom"
+										),
+									],
+									className='two columns', style={'margin-bottom': '5px', 'margin-top': '15px'}
+								),
+								html.Div(
+									[
+										daq.Indicator(
+											id='microwave-RF-indicator',
+											value=False,
+											color="red",
+											label="RF",
+											width=35,
+											height=35,
+											labelPosition="bottom"
+										),
+									],
+									className='two columns', style={'margin-bottom': '5px', 'margin-top': '15px', 'size': '10px'}
+								),
+							],
+							className='row'
+						),
+						html.Hr(),
+						html.Div(
+							[
+								daq.LEDDisplay(
+									id='microwave-power-display',
+									size=30,
+									label="Power (W)",
+									color="#447EFF",
+									value=500,
+									labelPosition="top",
+									style={'marginRight': '7%'},
+									className='three columns'
+								),
+								daq.LEDDisplay(
+									id='microwave-frequency-display',
+									size=30,
+									label="Frequency (MHz)",
+									color="#447EFF",
+									value="2450",
+									labelPosition="top",
+									style={'marginBottom': '0px'},
+									className='three columns'
+								),
+								daq.LEDDisplay(
+									id='microwave-temperature1-display',
+									size=10,
+									label="T 1 (degC)",
+									color="#447EFF",
+									value="20",
+									labelPosition="top",
+									style={'marginTop': '10px'},
+									className='three columns'
+								),
+								daq.LEDDisplay(
+									id='microwave-temperature2-display',
+									size=10,
+									label="T 2 (degC)",
+									color="#447EFF",
+									value="20",
+									labelPosition="top",
+									style={'marginTop': '10px'},
+									className='three columns'
+								),
+							],
+							className='row', style={'marginLeft':"20%"}
+						),
+						html.Hr(),
+						html.H3(
+							"Control comes here...",
+							style={
+								"textAlign": "Center",
+								"paddingBottom": "4.5%",
+								"border-radius": "1px",
+								"border-width": "5px",
+								"border-bottom": "1px solid rgb(216, 216, 216)",
+							},
+						),
+						html.Div(
+							[
+								dcc.Graph(
+									id="microwave-power-graph", # power and reflected power
+
+									style={
+										"height": "254px",
+										"marginLeft":"0%",
+										"marginTop":"0%"
+										},
+								),
+							],
+							className='row'
+						),
+						html.Div(
+							[
+								dcc.Graph(
+									id="microwave-frequency-graph",
+
+									style={
+										"height": "254px",
+										"marginLeft":"0%",
+										"marginTop":"0%"
+										},
+								),
+							],
+							className='row'
+						),
+						html.Div(
+							[
+								dcc.Graph(
+									id="microwave-temperature-graph", # t1 and t2
+
+									style={
+										"height": "254px",
+										"marginLeft":"0%",
+										"marginTop":"0%"
+										},
+								),
+							],
+							className='row'
 						),
 						html.Div(
 							[
@@ -598,7 +756,8 @@ base_layout = html.Div(
 										"border-radius": "5px",
 										"width": "29%",
 										"height": "10%",
-										"marginLeft": "34%",
+										# "marginLeft": "34%",
+										"marginLeft": "3%",
 										"marginBottom": "6%",
 									},
 								),
@@ -657,9 +816,9 @@ base_layout = html.Div(
 		),
 	],
 	style={
-		"padding": "0px 10px 10px 10px",
-		"marginLeft": "auto",
-		"marginRight": "auto",
+		"padding": "0px 5px 5px 5px",
+		"marginLeft": "0%",
+		"marginRight": "0%",
 		"width": "1100",
 		"height": "1000",
 		"boxShadow": "0px 0px 5px 5px rgba(204,204,204,0.4)",
