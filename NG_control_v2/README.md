@@ -10,5 +10,6 @@ Maybe at a later point the readouts of the database (High voltage, current, dose
 
 - Gallery https://dash.plot.ly/gallery
 - https://github.com/plotly/dash-daq-omega-pid plots
+- https://github.com/plotly/dash-daq-monorepo/tree/master/dash-apps
 
 
