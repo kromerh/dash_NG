@@ -419,15 +419,168 @@ base_layout = html.Div(
 							className='row', style={'marginLeft':"20%"}
 						),
 						html.Hr(),
-						html.H3(
-							"Control comes here...",
+						html.Div(
+							[
+								daq.PowerButton(
+									id='microwave-shutdown',
+									on='true',
+									label="Shutdown",
+									labelPosition='bottom',
+									color="red",
+									disabled=True,
+									className='four columns'
+								),
+								daq.PowerButton(
+									id='microwave-RF-start',
+									on=False,
+									label="RF ON/OFF",
+									labelPosition='bottom',
+									color="green",
+									# disabled=True,
+									className='four columns'
+								),
+								daq.PowerButton(
+									id='microwave-DLL-start',
+									on=False,
+									label="DLL ON/OFF",
+									labelPosition='bottom',
+									color="orange",
+									# disabled=True,
+									className='four columns'
+								),
+							], className='row'
+							, style={'marginLeft':"20%","marginBottom": "5.5%"}
+						),
+						html.Div(
+							[
+								html.H5(
+									"Power (W)",
+									className='eight columns',
+									style={
+										"textAlign": "Center",
+										# "paddingTop": "2.5%",
+									},
+								),
+								daq.StopButton(
+									"Send",
+									id='microwave-power-send-button',
+									n_clicks=0,
+									style={
+										"width": "20%",
+										"display": "flex",
+										"justify-content": "center",
+										"align-items": "center",
+										"marginLeft": "2%",
+										"marginRight": "2%",
+										# "marginBottom": "5%",
+									}
+								),
+							], className='row', style={"marginBottom": "5.5%"}
+						),
+						html.Div(
+							[
+								daq.Slider(
+									id="microwave-power-slider",
+									value=0,
+									color="red",
+									min=0,
+									max=500,
+									size=400,
+									step=1,
+									handleLabel={
+										"showCurrentValue": True,
+										"label": "Value"
+									},
+									marks={
+										"0": "0",
+										"100": "",
+										"200": "200",
+										"300": "",
+										"400": "",
+										"500": "500",
+									},
+									# targets={
+									# 	"80": {
+									# 		"showCurrentValue": "False",
+									# 		"label": "WARNING",
+									# 		"color": "#EA0606",
+									# 	},
+									# 	"100": "",
+									# },
+								)
+							],
 							style={
-								"textAlign": "Center",
-								"paddingBottom": "4.5%",
-								"border-radius": "1px",
-								"border-width": "5px",
-								"border-bottom": "1px solid rgb(216, 216, 216)",
+								"display": "flex",
+								"justify-content": "center",
+								"align-items": "center",
+								"marginBottom": "12%",
 							},
+							className='row'
+						),
+						html.Div(
+							[
+								html.H5(
+									"Frequency (MHz)",
+									className='eight columns',
+									style={
+										"textAlign": "Center",
+										# "paddingTop": "2.5%",
+									},
+								),
+								daq.StopButton(
+									"Send",
+									id='microwave-frequency-send-button',
+									n_clicks=0,
+									style={
+										"width": "20%",
+										"display": "flex",
+										"justify-content": "center",
+										"align-items": "center",
+										"marginLeft": "2%",
+										"marginRight": "2%",
+										# "marginBottom": "5%",
+									}
+								),
+							], className='row', style={"marginBottom": "5.5%"}
+						),
+						html.Div(
+							[
+								daq.Slider(
+									id="microwave-frequency-slider",
+									value=0,
+									color="red",
+									min=0,
+									max=2450,
+									size=400,
+									step=10,
+									handleLabel={
+										"showCurrentValue": True,
+										"label": "Value"
+									},
+									marks={
+										"0": "0",
+										"500": "500",
+										"1000": "1000",
+										"2000": "2000",
+										"2450": "2450",
+									},
+									# targets={
+									# 	"80": {
+									# 		"showCurrentValue": "False",
+									# 		"label": "WARNING",
+									# 		"color": "#EA0606",
+									# 	},
+									# 	"100": "",
+									# },
+								)
+							],
+							style={
+								"display": "flex",
+								"justify-content": "center",
+								"align-items": "center",
+								"marginBottom": "12%",
+							},
+							className='row'
 						),
 						html.Div(
 							[
@@ -690,7 +843,35 @@ base_layout = html.Div(
 					[
 						html.Div(
 							[
-								html.H3("Gauges", style={"textAlign": "center"}),
+								html.H3("HV and Dose", style={"textAlign": "center"}),
+								html.Div(
+									[
+										dcc.Graph(
+											id="HV-graph", # t1 and t2
+
+											style={
+												"height": "254px",
+												"marginLeft":"0%",
+												"marginTop":"0%"
+												},
+										),
+									],
+									className='row'
+								),
+								html.Div(
+									[
+										dcc.Graph(
+											id="Dose-graph", # t1 and t2
+
+											style={
+												"height": "254px",
+												"marginLeft":"0%",
+												"marginTop":"0%"
+												},
+										),
+									],
+									className='row'
+								),
 								html.Div(
 									[
 										dcc.Graph(

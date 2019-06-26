@@ -46,3 +46,64 @@ DELETE FROM flow_meter_readout_live;
 
 # Reset a table
 ALTER TABLE flow_meter_readout_live AUTO_INCREMENT = 0 # set to 0 for completely fresh table
+
+
+# ***************************************************************
+# ***************************************************************
+# MICROWAVE GENERATOR CONTROL and READOUT
+# ***************************************************************
+# ***************************************************************
+
+# Create the table microwave_generator_control
+CREATE TABLE microwave_generator_control (
+	time_created TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+	time_executed TIMESTAMP(6),
+	command text NOT NULL,
+	executed boolean NOT NULL
+	);
+
+# Primary key
+ALTER TABLE microwave_generator_control
+ADD COLUMN id SERIAL PRIMARY KEY;
+
+
+
+
+# Create the table microwave_generator_power
+CREATE TABLE microwave_generator_power (
+	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+	power float NOT NULL
+	);
+
+# Primary key
+ALTER TABLE microwave_generator_power
+ADD COLUMN id SERIAL PRIMARY KEY;
+
+
+
+
+# Create the table microwave_generator_frequency
+CREATE TABLE microwave_generator_frequency (
+	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+	frequency float NOT NULL
+	);
+
+# Primary key
+ALTER TABLE microwave_generator_frequency
+ADD COLUMN id SERIAL PRIMARY KEY;
+
+
+
+
+
+
+# Create the table microwave_generator_temperature
+CREATE TABLE microwave_generator_temperature (
+	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+	temperature1 float NOT NULL,
+	temperature2 float NOT NULL
+	);
+
+# Primary key
+ALTER TABLE microwave_generator_temperature
+ADD COLUMN id SERIAL PRIMARY KEY;
