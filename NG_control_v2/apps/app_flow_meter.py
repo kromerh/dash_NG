@@ -18,7 +18,12 @@ from app import app
 
 state_dic = {'state': "none"}
 
+# read password and user to database
+credentials_file = r'./credentials.pw'
 
+credentials = pd.read_csv(credentials_file, header=0)
+user = credentials['username'].values[0]
+pw = credentials['password'].values[0]
 
 
 ################################################################################################################################################
@@ -30,8 +35,8 @@ def setFlowMeterControlValues(value):
 	"""
 	# DOSE
 	mysql_connection = pymysql.connect(host="twofast-RPi3-0",  # your host
-					 user="writer",  # username
-					 passwd="heiko",  # password
+					 user=user,  # username
+					 passwd=pw,  # password
 					 db="NG_twofast_DB", # name of the database
 					 charset='utf8',
 					 cursorclass=pymysql.cursors.DictCursor)
@@ -57,8 +62,8 @@ def readFlowMeterVoltage(pastSeconds=60): # read past 60secs by default
 	"""
 
 	db = pymysql.connect(host="twofast-RPi3-0",  # your host
-						 user="doseReader",  # username
-						 passwd="heiko",  # password
+						 user=user,  # username
+						 passwd=pw,  # password
 						 db="NG_twofast_DB",  # name of the database
 						 charset='utf8',
 						 cursorclass=pymysql.cursors.DictCursor)
