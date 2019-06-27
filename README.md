@@ -1,4 +1,4 @@
-# Fast Neutron Generator Monitoring and Control system
+﻿# Fast Neutron Generator Monitoring and Control system
 
 ## Database information
 
@@ -59,7 +59,7 @@ At 4 am a mysql script will clear all those entries that have NULL everywhere an
 | 9  | Gray-brown  | Power Supply common  |
 | 10  | Brown-green  | Flow Signal output common  |
 
-
+- Check the description of the readout and control structure via flow_meter/2019-06-27.Layout.BROOKSControl and 2019-06-27.Layout.BROOKSReadout
 
 # ToDo
 
