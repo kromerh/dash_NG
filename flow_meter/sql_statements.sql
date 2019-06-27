@@ -81,6 +81,19 @@ ADD COLUMN id SERIAL PRIMARY KEY;
 
 
 
+# Create the table microwave_generator_reflected_power
+CREATE TABLE microwave_generator_reflected_power (
+	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+	power_out float NOT NULL,
+	power_reflected float NOT NULL
+	);
+
+# Primary key
+ALTER TABLE microwave_generator_reflected_power
+ADD COLUMN id SERIAL PRIMARY KEY;
+
+
+
 
 # Create the table microwave_generator_frequency
 CREATE TABLE microwave_generator_frequency (
@@ -94,6 +107,16 @@ ADD COLUMN id SERIAL PRIMARY KEY;
 
 
 
+# Create the table microwave_generator_DLL
+CREATE TABLE microwave_generator_DLL (
+	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+	DLL_frequency float NOT NULL,
+	DLL_reflexion float NOT NULL
+	);
+
+# Primary key
+ALTER TABLE microwave_generator_DLL
+ADD COLUMN id SERIAL PRIMARY KEY;
 
 
 
@@ -107,3 +130,19 @@ CREATE TABLE microwave_generator_temperature (
 # Primary key
 ALTER TABLE microwave_generator_temperature
 ADD COLUMN id SERIAL PRIMARY KEY;
+
+
+
+# Create the table microwave_generator_relais
+CREATE TABLE microwave_generator_relais (
+	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+	relais_5 boolean NOT NULL,
+	relais_24 boolean NOT NULL
+	);
+
+# Primary key
+ALTER TABLE microwave_generator_relais
+ADD COLUMN id SERIAL PRIMARY KEY;
+
+
+INSERT INTO microwave_generator_control (time_created, command, executed) VALUES ('2019-06-')
