@@ -53,7 +53,7 @@ def saveFlowMeterVoltageToDB(voltage):
 
 
 ser = serial.Serial(arduinoPort, 9600)
-print('Serial connected')
+print('Serial connected at ' + str(arduinoPort))
 sleep(1)
 # val = 0.5 # Below 32 everything in ASCII is gibberish
 while True:
@@ -64,18 +64,18 @@ while True:
 
 		# convert
 		valueSend = str(setpoint_voltage)
-		print("Sending value to Arduino " + valueSend)
+		# print("Sending value to Arduino " + valueSend)
 		# send
-		# ser.write(valueSend.encode()) # Convert the decimal number to ASCII then send it to the Arduino
+		ser.write(valueSend.encode()) # Convert the decimal number to ASCII then send it to the Arduino
 
-		# print("Successfully sent to Arduino:" + str(valueSend.encode()))
+		print("Successfully sent to Arduino:" + str(valueSend.encode()))
 
 		sleep(0.5) # Delay
 
 		# READING OF FLOW METER
 		valueRead = ser.readline(500) # b'V_1 1.30, 4.20, V_out 215.04\r\n'
 
-		print('Raw reading from Arduino:' + str(valueRead)) # Read the newest output from the Arduino
+		print('Raw reading from Arduino :' + str(valueRead)) # Read the newest output from the Arduino
 		voltageStr = str(valueRead).split(',')
 
 		voltageStr = voltageStr[0]
