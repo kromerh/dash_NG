@@ -81,6 +81,40 @@ def readFlowMeterVoltage(pastSeconds=60): # read past 60secs by default
 
 	return df
 
+# *****************
+# MICROWAVE GENERATOR
+# *****************
+
+def getFrequency(mysql_connection):
+	"""
+	Reads the last 300 seconds of the frequency and returns it in a dataframe
+	"""
+	query = "SELECT * FROM microwave_generator_frequency ORDER BY id DESC LIMIT 300"
+	df = pd.read_sql(query, mysql_connection)
+
+	# columns: time (timestamp), frequency (float), id (primary key)
+	return df
+
+def getPower(mysql_connection):
+	"""
+	Reads the last 300 seconds of the power and returns it in a dataframe
+	"""
+	query = "SELECT * FROM microwave_generator_power ORDER BY id DESC LIMIT 300"
+	df = pd.read_sql(query, mysql_connection)
+
+	# columns: time (timestamp), power (float), id (primary key)
+	return df
+
+def getTemperature(mysql_connection):
+	"""
+	Reads the last 300 seconds of the two temperatures and returns it in a dataframe
+	"""
+	query = "SELECT * FROM microwave_generator_temperature ORDER BY id DESC LIMIT 300"
+	df = pd.read_sql(query, mysql_connection)
+
+	# columns: time (timestamp), temperature1 (float), temperature2 (float), id (primary key)
+	return df
+
 ################################################################################################################################################
 # base_layout
 ################################################################################################################################################
