@@ -26,7 +26,7 @@ def getFlowMeterControlValues():
 
 	setpoint_voltage = df.loc[:,'setpoint_voltage'].values[0]
 
-	print(setpoint_voltage)
+	# print(setpoint_voltage)
 
 	return setpoint_voltage
 
@@ -53,7 +53,7 @@ def saveFlowMeterVoltageToDB(voltage):
 
 
 ser = serial.Serial(arduinoPort, 9600)
-print('connected')
+print('Serial connected')
 sleep(1)
 # val = 0.5 # Below 32 everything in ASCII is gibberish
 while True:
@@ -64,11 +64,11 @@ while True:
 
 		# convert
 		valueSend = str(setpoint_voltage)
-
+		print("Sending value to Arduino " + valueSend)
 		# send
-		ser.write(valueSend.encode()) # Convert the decimal number to ASCII then send it to the Arduino
+		# ser.write(valueSend.encode()) # Convert the decimal number to ASCII then send it to the Arduino
 
-		print("Sending to Arduino:" + str(valueSend.encode()))
+		# print("Successfully sent to Arduino:" + str(valueSend.encode()))
 
 		sleep(0.5) # Delay
 
