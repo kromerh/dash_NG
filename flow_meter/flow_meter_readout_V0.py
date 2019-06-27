@@ -26,7 +26,7 @@ def getFlowMeterControlValues():
 
 	setpoint_voltage = df.loc[:,'setpoint_voltage'].values[0]
 
-	# print(setpoint_voltage)
+	print(setpoint_voltage)
 
 	return setpoint_voltage
 
@@ -53,6 +53,7 @@ def saveFlowMeterVoltageToDB(voltage):
 
 
 ser = serial.Serial(arduinoPort, 9600)
+print('connected')
 sleep(1)
 # val = 0.5 # Below 32 everything in ASCII is gibberish
 while True:
