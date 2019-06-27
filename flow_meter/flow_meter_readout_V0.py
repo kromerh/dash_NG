@@ -38,7 +38,7 @@ db = pymysql.connect(host="twofast-RPi3-0",  # your host
 					 charset='utf8',
 					 cursorclass=pymysql.cursors.DictCursor)
 
-arduinoPort = '/dev/ttyACM0'  # might need to be changed if another arduino is plugged in or other serial
+arduinoPort = '/dev/ttyAMA0'  # might need to be changed if another arduino is plugged in or other serial
 serialArduino = serial.Serial(port=arduinoPort, baudrate=9600)
 
 def saveFlowMeterVoltageToDB(voltage):
