@@ -51,7 +51,7 @@ At 4 am a mysql script will clear all those entries that have NULL everywhere an
 ## Pin connection
 
 | Number  | Color  | Description  | Arduino PIN |
-|:-:|:-:|:-:|
+|:-:|:-:|:-:|:-:|
 | 1  | Red-blue  | Setpoint common  | GND |
 | 2  | White-green  | Flow Signal 0-5 V  | A0 |
 | 5  | Blue  | Power Supply +13.5 to +27 VDC  | - |
