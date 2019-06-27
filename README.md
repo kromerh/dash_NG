@@ -50,14 +50,14 @@ At 4 am a mysql script will clear all those entries that have NULL everywhere an
 
 ## Pin connection
 
-| Number  | Color  | Description  |
+| Number  | Color  | Description  | Arduino PIN |
 |:-:|:-:|:-:|
-| 1  | Red-blue  | Setpoint common  |
-| 2  | White-green  | Flow Signal 0-5 V  |
-| 5  | Blue  | Power Supply +13.5 to +27 VDC  |
-| 8  | Green  | Setpoint Signal 0 - 5 V  |
-| 9  | Gray-brown  | Power Supply common  |
-| 10  | Brown-green  | Flow Signal output common  |
+| 1  | Red-blue  | Setpoint common  | GND |
+| 2  | White-green  | Flow Signal 0-5 V  | A0 |
+| 5  | Blue  | Power Supply +13.5 to +27 VDC  | - |
+| 8  | Green  | Setpoint Signal 0 - 5 V  | Pin 9 |
+| 9  | Gray-brown  | Power Supply common  | GND |
+| 10  | Brown-green  | Flow Signal output common  | GND |
 
 - Check the description of the readout and control structure via flow_meter/2019-06-27.Layout.BROOKSControl and 2019-06-27.Layout.BROOKSReadout
 
