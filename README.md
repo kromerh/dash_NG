@@ -61,7 +61,4 @@ At 4 am a mysql script will clear all those entries that have NULL everywhere an
 
 - Check the description of the readout and control structure via flow_meter/2019-06-27.Layout.BROOKSControl and 2019-06-27.Layout.BROOKSReadout
 
-# ToDo
-
-- [ ]: Trello-Card NGMO: Database information
 
