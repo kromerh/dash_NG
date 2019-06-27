@@ -1,4 +1,5 @@
 import serial
+import serial.tools.list_ports
 
 arduinoPort = '/dev/ttyACM0'  # might need to be changed if another arduino is plugged in or other serial
 
@@ -6,4 +7,4 @@ arduinoPort = '/dev/ttyACM0'  # might need to be changed if another arduino is p
 def fun_read_serial_ports():
     return list(serial.tools.list_ports.comports())
 
-fun_read_serial_ports()
+print(fun_read_serial_ports())
