@@ -59,7 +59,8 @@ CREATE TABLE microwave_generator_control (
 	time_created TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
 	time_executed TIMESTAMP(6),
 	command text NOT NULL,
-	executed boolean NOT NULL
+	executed boolean NOT NULL,
+	answer text
 	);
 
 # Primary key
@@ -133,15 +134,16 @@ ADD COLUMN id SERIAL PRIMARY KEY;
 
 
 
-# Create the table microwave_generator_relais
-CREATE TABLE microwave_generator_relais (
+# Create the table microwave_generator_state
+CREATE TABLE microwave_generator_state (
 	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
 	relais_5 boolean NOT NULL,
-	relais_24 boolean NOT NULL
+	relais_24 boolean NOT NULL,
+	rf_status boolean NOT NULL
 	);
 
 # Primary key
-ALTER TABLE microwave_generator_relais
+ALTER TABLE microwave_generator_state
 ADD COLUMN id SERIAL PRIMARY KEY;
 
 
