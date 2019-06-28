@@ -56,6 +56,17 @@ ALTER TABLE flow_meter_readout_live AUTO_INCREMENT = 0 # set to 0 for completely
 
 # Create the table microwave_generator_control
 CREATE TABLE microwave_generator_control (
+	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+	DLL_on boolean NOT NULL
+	);
+
+# Primary key
+ALTER TABLE microwave_generator_control
+ADD COLUMN id SERIAL PRIMARY KEY;
+
+
+# Create the table microwave_generator_command
+CREATE TABLE microwave_generator_command (
 	time_created TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
 	time_executed TIMESTAMP(6),
 	command text NOT NULL,
@@ -64,7 +75,7 @@ CREATE TABLE microwave_generator_control (
 	);
 
 # Primary key
-ALTER TABLE microwave_generator_control
+ALTER TABLE microwave_generator_command
 ADD COLUMN id SERIAL PRIMARY KEY;
 
 

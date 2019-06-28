@@ -36,12 +36,26 @@ mysql_connection = pymysql.connect(host="twofast-RPi3-0",  # your host
 				 cursorclass=pymysql.cursors.DictCursor)
 
 
+# truncate the command table
+cur = mysql_connection.cursor()
+try:
+	cur.execute("TRUNCATE TABLE microwave_generator_command")
+except:
+	cur.rollback()
+
+mysql_connection.commit()
+cur.close()
+
+
+
+
+
 
 def getCommandsToExecute(mysql_connection):
 	"""
-	Get the last 10 commands that were not executed. Returns the dataframe
+	Get the last 5 commands that were not executed. Returns the dataframe
 	"""
-	query = "SELECT * FROM microwave_generator_control WHERE executed = 0 ORDER BY time_created ASC LIMIT 10"
+	query = "SELECT * FROM microwave_generator_command WHERE executed = 0 ORDER BY time_created ASC LIMIT 5"
 	df = pd.read_sql(query, mysql_connection)
 
 	# columns: time_created (timestamp), time_executed (timestamp), command (text), executed (1 or 0), id (primary key)
@@ -49,15 +63,15 @@ def getCommandsToExecute(mysql_connection):
 
 
 
-def updateCommandAsExecuted(command_id, timeExecuted, answer, mysql_connection):
+def updateCommandAsExecuted(command_id, timeNow, answer, mysql_connection):
 	"""
 	After the command was sent to the microwave generator (and no error returned), update in the database that the command has been sent.
 	answer: response from the microwave generator
 	"""
-	timeExecuted = timeExecuted.strftime('%Y-%m-%d %H:%M:%S')
+	timeExecuted = timeNow.strftime('%Y-%m-%d %H:%M:%S')
 	cur = mysql_connection.cursor()
 	try:
-		cur.execute("UPDATE microwave_generator_control SET executed = 1, time_executed = %(time)s, answer = %(answer)s WHERE id = %(commandId)s" % {"time": timeExecuted, "commandId": command_id, "answer": answer})
+		cur.execute("UPDATE microwave_generator_command SET executed = 1, time_executed = '%(time)s', answer = %(answer)s WHERE id = %(commandId)s" % {"time": timeExecuted, "commandId": command_id, "answer": answer})
 	except:
 		cur.rollback()
 
@@ -65,71 +79,69 @@ def updateCommandAsExecuted(command_id, timeExecuted, answer, mysql_connection):
 	cur.close()
 
 
-def sendCommandToMicrowave(command, ser, command_id):
+def switchDLLstateInControlTable(mysql_connection):
+	timeExecuted = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+	cur = mysql_connection.cursor()
+	try:
+		cur.execute("UPDATE microwave_generator_control SET DLL_on = 1 - DLL_on, time = '%(timeExecuted)s' WHERE id = 1" % {"timeExecuted": timeExecuted})
+	except:
+		cur.rollback()
+
+	mysql_connection.commit()
+	cur.close()
+
+
+def sendCommandToMicrowave(command, ser, command_id, readline_buffer=500, mysql_connection):
 	"""
 	Takes one command and the serial connection to the microwave generator as input and sends command via serial to the microwave.
 	command: is the full command
 	ser: serial connection to microwave generator
-	command_id: id of the command in the microwave_generator_control table
+	command_id: id of the command in the microwave_generator_command table
+	readline_buffer: default is 500, how much to read from the serial
 	"""
 
 	# send the command
+	cmd = command
+	ser.write(cmd.encode())
+
+	# sleep 0.01 s
+	sleep(0.01)
 
 	# get answer
+	response = str(ser.readline(readline_buffer))
+	print(f'Response when sending command {cmd} is {response}')
 
 	# call updateCommandAsExecuted(command_id, timeExecuted, answer) to update executed to 1 and store answer from the microwave generator
+	timeNow = datetime.datetime.now()
+	updateCommandAsExecuted(command_id, timeNow, response, mysql_connection)
 
-	# sleep 0.1 seconds
+
+	# if the command is to turn the DLL_on, update the control table
+	if ('DLL' in cmd) & ('OK' in response):
+		# toggle the DLL_on column value in the control table
+		switchDLLstateInControlTable(mysql_connection)
 
 
-def insertIntoFrequencyTable(val, mysql_connection):
+def insertMicrowaveReadoutIntoTable(frequency_soll, power_soll, temp1, temp2, relais_5, relais_24, rf_status, power_out, power_reflected, DLL_frequency, DLL_reflexion, mysql_connection):
 	cur = mysql_connection.cursor()
 	try:
-		cur.execute("UPDATE microwave_generator_frequency SET frequency = %(val)s" % {"val": val})
-	except:
-		cur.rollback()
+		if float(frequency_soll) > -1:
+			cur.execute("INSERT INTO microwave_generator_frequency (frequency) VALUES (%(val)s)" % {"val": frequency_soll})
+		if float(power_soll) > -1:
+			cur.execute("INSERT INTO microwave_generator_power (power) VALUES (%(val)s)" % {"val": power_soll})
+		if (float(temp1) > -1) & (float(temp2) > -1):
+			cur.execute("INSERT INTO microwave_generator_temperature (temperature1, temperature2) VALUES (%(val1)s, %(val2)s)" % {"val1": temp1, "val2": temp2})
+		if float(relais_5) > -1:
+			cur.execute("INSERT INTO microwave_generator_state (relais_5) VALUES (%(relais_5)s)" % {"relais_5": relais_5})
+		if float(relais_24) > -1:
+			cur.execute("INSERT INTO microwave_generator_state (relais_24) VALUES (%(relais_24)s)" % {"relais_24": relais_24})
+		if float(rf_status) > -1:
+			cur.execute("INSERT INTO microwave_generator_state (rf_status) VALUES (%(rf_status)s)" % {"rf_status": rf_status})
+		if (float(power_out) > -1) & (float(power_reflected) > -1):
+			cur.execute("INSERT INTO microwave_generator_reflected_power (power_out, power_reflected) VALUES (%(power_out)s, %(power_reflected)s)" % {"power_out": power_out, "power_reflected": power_reflected})
+		if (float(DLL_frequency) > -1) & (float(DLL_reflexion) > -1):
+			cur.execute("INSERT INTO microwave_generator_DLL (DLL_frequency, DLL_reflexion) VALUES (%(DLL_frequency)s, %(DLL_reflexion)s)" % {"DLL_frequency": DLL_frequency, "DLL_reflexion": DLL_reflexion})
 
-	mysql_connection.commit()
-	cur.close()
-
-
-def insertIntoPowerTable(val, mysql_connection):
-	cur = mysql_connection.cursor()
-	try:
-		cur.execute("UPDATE microwave_generator_power SET power = %(val)s" % {"val": val})
-	except:
-		cur.rollback()
-
-	mysql_connection.commit()
-	cur.close()
-
-
-def insertIntoTemperatureTable(val1, val2, mysql_connection):
-	cur = mysql_connection.cursor()
-	try:
-		cur.execute("UPDATE microwave_generator_temperature SET temperature1 = %(val1)s, temperature2 = %(val2)s" % {"val1": val1, "val2": val2})
-	except:
-		cur.rollback()
-
-	mysql_connection.commit()
-	cur.close()
-
-
-def insertIntoStateTable(relais_5, relais_24, rf_status, mysql_connection):
-	cur = mysql_connection.cursor()
-	try:
-		cur.execute("UPDATE microwave_generator_state SET relais_5 = %(relais_5)s, relais_24 = %(relais_24)s, rf_status = %(rf_status)s" % {"relais_5": relais_5, "relais_24": relais_24, "rf_status": rf_status})
-	except:
-		cur.rollback()
-
-	mysql_connection.commit()
-	cur.close()
-
-
-def insertIntoReflectedPowerTable(power_out, power_reflected, mysql_connection):
-	cur = mysql_connection.cursor()
-	try:
-		cur.execute("UPDATE microwave_generator_reflected_power SET power_out = %(power_out)s, power_reflected = %(power_reflected)s" % {"power_out": power_out, "power_reflected": power_reflected})
 	except:
 		cur.rollback()
 
@@ -148,99 +160,223 @@ def insertIntoDLLTable(DLL_frequency, DLL_reflexion, mysql_connection):
 	cur.close()
 
 
-def readMicrowave(ser, mode='normal'):
+def readMicrowave(ser, mode='normal', readline_buffer=500):
 	"""
 	Reads the microwave generator.
 	ser: serial connection
 	mode: {
-			'normal': frequency_soll, power_soll, temp1 and temp2, relais_5, relais_24V, rf_status
-			'reflected': 'normal' + power_out, power_reflected. MAXIMAL 1/250 ms this command!!!
-			'DLE': 'normal' + DLL_frequency, DLL_reflexion
+			'normal': frequency_soll, power_soll, temp1 and temp2, relais_5, relais_24, rf_status, power_out, power_reflected
 			}
+	readline_buffer: default is 500, how much to read from the serial
 	"""
-
+	# initialize everything as -1
+	frequency_soll = -1
+	power_soll = -1
+	temp1 = -1
+	temp2 = -1
+	relais_5 = -1
+	relais_24 = -1
+	rf_status = -1
+	power_out = -1
+	power_reflected = -1
+	DLL_frequency = -1
+	DLL_reflexion = -1
 
 	# send read command frequency_soll: $FRQG
+	cmd = '$FRQG'
+	ser.write(cmd.encode())
 
 	# sleep 0.01 s
+	sleep(0.01)
 
 	# read serial, will return $FRQG:2450MHz
+	response = str(ser.readline(readline_buffer))
+	t_ = re.findall(r':(\d+)', response)
+	print('frequency_soll response: {response}')
 
-	# call insertIntoFrequencyTable to update microwave_generator_frequency
+	# extract the frequency from the response and if it is the good one, send it to the database
+	if (len(t_) > 0) & (cmd in response):
+	    frequency_soll = t_[0]
+    else:
+    	print('ERROR frequency_soll response: {response}')
+
 
 
 
 	# send read command power_soll: $PWRG
+	cmd = '$PWRG'
+	ser.write(cmd.encode())
 
 	# sleep 0.01 s
+	sleep(0.01)
 
 	# read serial, will return $PWRG:250.2W
+	response = str(ser.readline(readline_buffer))
+	t_ = re.findall(r':(\d+)', response)
+	print('power_soll response: {response}')
 
-	# call insertIntoPowerTable to update microwave_generator_power
-
+	if (len(t_) > 0) & (cmd in response):
+	    power_soll = t_[0]
+    else:
+    	print('ERROR power_soll response: {response}')
 
 
 	# send read command temp1 and temp2: $TMPG
+	cmd = '$TMPG'
+	ser.write(cmd.encode())
 
 	# sleep 0.01 s
+	sleep(0.01)
 
 	# read serial, will return $TMPG:19oC,20oC
+	response = str(ser.readline(readline_buffer))
+	print('temp1 response: {response}')
 
-	# call insertIntoTemperatureTable to update microwave_generator_temperature
+	t_ = re.findall(r':(\d+).*[^0-9](\d+)', response)
+
+	if (len(t_) > 1) & (cmd in response):
+	    temp1 = t_[0]
+		temp2 = t_[1]
+    else:
+    	print('ERROR temp1 response: {response}')
 
 
 
 	# send read command relais_5: $FVRG
+	cmd = '$FVRG'
+	ser.write(cmd.encode())
 
 	# sleep 0.01 s
+	sleep(0.01)
 
 	# read serial, will return $FVRG:1 (activated) or $FVRG:0 (deactivated)
+	response = str(ser.readline(readline_buffer))
+	print('relais_5 response: {response}')
+
+	t_ = re.findall(r':(\d+)', response)
+
+	if (len(t_) > 0) & (cmd in response):
+	    relais_5 = t_[0]
+    else:
+    	print('ERROR relais_5 response: {response}')
 
 
 	# send read command relais_24: $PLRG
+	cmd = '$PLRG'
+	ser.write(cmd.encode())
 
 	# sleep 0.01 s
+	sleep(0.01)
 
-	# read serial, will return $PLRG:1 (activated) or $PLRG:0 (deactivated)
+	# read serial, will return $FVRG:1 (activated) or $FVRG:0 (deactivated)
+	response = str(ser.readline(readline_buffer))
+	print('relais_24 response: {response}')
+
+	t_ = re.findall(r':(\d+)', response)
+
+	if (len(t_) > 0) & (cmd in response):
+	    relais_24 = t_[0]
+    else:
+    	print('ERROR relais_24 response: {response}')
+
 
 
 	# send read command rf_status: $ENAG
+	cmd = '$ENAG'
+	ser.write(cmd.encode())
 
 	# sleep 0.01 s
+	sleep(0.01)
 
-	# read serial, will return $ENAG:1 (activated) or $ENAG:0 (deactivated)
+	# read serial, will return $FVRG:1 (activated) or $FVRG:0 (deactivated)
+	response = str(ser.readline(readline_buffer))
+	print('rf_status response: {response}')
 
-	# call insertIntoStateTable to update microwave_generator_state
+	t_ = re.findall(r':(\d+)', response)
+
+	if (len(t_) > 0) & (cmd in response):
+	    rf_status = t_[0]
+    else:
+    	print('ERROR rf_status response: {response}')
 
 
 
-	# if reflected mode
 
-		# send read command power_out and power_reflected: $FRQG
+	# send read command power_out and power_reflected: $FRPG
+	cmd = '$FRPG'
+	ser.write(cmd.encode())
+
+	# sleep 0.01 s
+	sleep(0.1)
+
+	# read serial, will return $FVRG:1 (activated) or $FVRG:0 (deactivated)
+	response = str(ser.readline(readline_buffer))
+	print('power_out, power_reflected response: {response}')
+
+	t_ = re.findall(r':(\d+\.\d)W,(\d+\.\d)W', response)
+
+	if (len(t_) > 1) & (cmd in response):
+	    power_out = t_[0]
+	    power_reflected = t_[1]
+
+    else:
+    	print('ERROR power_out, power_reflected response: {response}')
+
+
+	# send read command DLL_frequency, DLL_reflexion: $DLE
+	cmd = '$FRPG'
+	ser.write(cmd.encode())
+
+	# sleep 0.01 s
+	sleep(0.1)
+
+	# read serial, will return $FVRG:1 (activated) or $FVRG:0 (deactivated)
+	response = str(ser.readline(readline_buffer))
+	print('power_out, power_reflected response: {response}')
+
+	t_ = re.findall(r':(\d+\.\d)W,(\d+\.\d)W', response)
+
+	if (len(t_) > 1) & (cmd in response):
+	    power_out = t_[0]
+	    power_reflected = t_[1]
+
+    else:
+    	print('ERROR power_out, power_reflected response: {response}')
+
+
+    # check if the DLL is on or off
+    query = "SELECT DLL_on FROM `microwave_generator_control` WHERE id = 1"
+	df = pd.read_sql(query, mysql_connection)
+	DLL_on = df['DLL_on'].values[0]
+
+	if DLL_on == 1:
+
+		cmd = '$DLE'
+		ser.write(cmd.encode())
 
 		# sleep 0.01 s
+		sleep(0.1)
 
-		# read serial, will return $FRQG:120.0W,24.2W
+		# read serial, will return DLL_frequency, DLL_reflexion $DLE,2449,-2.18dB
+		response = str(ser.readline(readline_buffer))
+		print('DLL_frequency, DLL_reflexion response: {response}')
 
-		# call insertIntoReflectedPowerTable to update microwave_generator_reflected_power
-
-
-	# if DLE mode
-
-		# send read command DLL_frequency, DLL_reflexion: $DLE
-
-		# sleep 0.01 s
-
-		# read serial, will return $DLE:,2451,-8.25dB
-
-		# call insertIntoDLLTable to update microwave_generator_DLL
+		t_ = re.findall(r',(\d+),(.*\.\d+)dB', response)
 
 
+		if (len(t_) > 1) & (cmd in response):
+		    DLL_frequency = t_[0]
+		    DLL_reflexion = t_[1]
 
-# val = 0.5 # Below 32 everything in ASCII is gibberish
+	    else:
+	    	print('ERROR DLL_frequency, DLL_reflexion response: {response}')
+
+	insertMicrowaveReadoutIntoTable(frequency_soll, power_soll, temp1, temp2, relais_5, relais_24, rf_status, power_out, power_reflected, DLL_frequency, DLL_reflexion mysql_connection)
+
+
 while True:
 	try:
-		sleep(0.05) # sleep mind. 50 ms, 1/10 ms is the maximal readout frequency that the microwave generator can handle
+		sleep(0.2) # sleep mind. 200 ms, 1/250 ms is the maximal readout frequency that the microwave generator can handle
 
 		# read the list of not executed commands from the database
 		df_commands = getCommandsToExecute(mysql_connection)
@@ -258,11 +394,11 @@ while True:
 				cmd_id = str(row['id'])
 
 				# send the command, in there it also updates the time and sets executed to 1
-				sendCommandToMicrowave(cmd, ser, cmd_id)
+				sendCommandToMicrowave(cmd, ser, cmd_id, readline_buffer=500, mysql_connection)
 
 
 		# read the microwave generator
-		readMicrowave(ser, mode='normal')
+		readMicrowave(ser, mode='normal', readline_buffer=500)
 
 		# SETPOINT VALUE OF FLOW METER
 		# read the database for the setpoint value
