@@ -4,7 +4,7 @@ import datetime
 import serial
 import sys
 import pandas as pd
-import pymysql
+import sqlalchemy
 import re
 
 master_mode = 'testing'
@@ -38,24 +38,15 @@ credentials = pd.read_csv(credentials_file, header=0)
 user = credentials['username'].values[0]
 pw = credentials['password'].values[0]
 
-mysql_connection = pymysql.connect(host="twofast-RPi3-0",  # your host
-				 user=user,  # username
-				 passwd=pw,  # password
-				 db="NG_twofast_DB", # name of the database
-				 charset='utf8',
-				 cursorclass=pymysql.cursors.DictCursor)
-
+host="twofast-RPi3-0",  # your host
+user=user  # username
+passwd=pw  # password
+db="NG_twofast_DB" # name of the database
+connect_string = 'mysql://%(user)s:%(pw)s@%(host)s/%(db)s'% {"user": user, "pw": pw, "host": host, "db": db}
+sql_engine = sql.create_engine(connect_string)
 
 # truncate the command table
-cur = mysql_connection.cursor()
-try:
-	cur.execute("TRUNCATE TABLE microwave_generator_command")
-except:
-	cur.rollback()
-
-mysql_connection.commit()
-cur.close()
-
+sql_engine.execute("TRUNCATE TABLE microwave_generator_command")
 
 
 
@@ -64,7 +55,7 @@ def getCommandsToExecute(mysql_connection):
 	Get the last 5 commands that were not executed. Returns the dataframe
 	"""
 	query = "SELECT * FROM microwave_generator_command WHERE executed = 0 ORDER BY time_created ASC LIMIT 5"
-	df = pd.read_sql(query, mysql_connection)
+	df = pd.read_sql(query, sql_engine)
 
 	if master_mode == 'testing':
 		print('Testing: getCommandsToExecute, dataframe is:')
