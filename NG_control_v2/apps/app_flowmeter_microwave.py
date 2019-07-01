@@ -36,6 +36,11 @@ sql_engine = sql.create_engine(connect_string)
 ################################################################################################################################################
 # function
 ################################################################################################################################################
+
+# ********************
+# FLOW METER
+# ********************
+
 def setFlowMeterControlValues(value, sql_engine):
 	"""
 	Sets the entry for the setpoint value in the database according to the user specified value
@@ -55,13 +60,13 @@ def readFlowMeterVoltage(sql_engine, pastSeconds=60): # read past 60secs by defa
 
 	return df
 
-# *****************
+# ********************
 # MICROWAVE GENERATOR
-# *****************
+# ********************
 
 def getFrequency(sql_engine):
 	"""
-	Reads the last 300 seconds of the frequency and returns it in a dataframe
+	Reads the last 300 entries of the frequency and returns it in a dataframe
 	"""
 	query = "SELECT * FROM microwave_generator_frequency ORDER BY id DESC LIMIT 300"
 	df = pd.read_sql(query, sql_engine)
@@ -71,7 +76,7 @@ def getFrequency(sql_engine):
 
 def getPower(sql_engine):
 	"""
-	Reads the last 300 seconds of the power and returns it in a dataframe
+	Reads the last 300 entries of the power and returns it in a dataframe
 	"""
 	query = "SELECT * FROM microwave_generator_power ORDER BY id DESC LIMIT 300"
 	df = pd.read_sql(query, sql_engine)
@@ -81,13 +86,25 @@ def getPower(sql_engine):
 
 def getTemperature(sql_engine):
 	"""
-	Reads the last 300 seconds of the two temperatures and returns it in a dataframe
+	Reads the last 300 entries of the two temperatures and returns it in a dataframe
 	"""
 	query = "SELECT * FROM microwave_generator_temperature ORDER BY id DESC LIMIT 300"
 	df = pd.read_sql(query, sql_engine)
 
 	# columns: time (timestamp), temperature1 (float), temperature2 (float), id (primary key)
 	return df
+
+def getState(sql_engine):
+	"""
+	Reads the last 10 entries of the two temperatures and returns it in a dataframe
+	"""
+	query = "SELECT * FROM microwave_generator_state ORDER BY id DESC LIMIT 10"
+	df = pd.read_sql(query, sql_engine)
+
+	# columns: time (timestamp), relais_5 (tinyint), relais_24 (tinyint), rf_status (tinyint), id (primary key)
+	return df
+
+
 
 ################################################################################################################################################
 # base_layout
@@ -998,13 +1015,15 @@ base_layout = html.Div(
 		# Placeholder Divs
 		html.Div(
 			[
-				dcc.Interval(id="flow-meter-readout-interval", interval=1000, n_intervals=0),
+				dcc.Interval(id="readout-interval", interval=1000, n_intervals=0),
 				html.Div(id="flow-meter-readout-start-time"), # start time of mass flow reading from database
 				html.Div(id="flow-meter-readout-stop-time"), # stop time of mass flow reading from database
 				html.Div(id="flow-meter-readout-command-string"), # start and stop readout of mass flow reading
 				html.Div(id="flow-meter-readout-running-time"), # running readout of mass flow reading
 				html.Div(id="flow-meter-setpoint-value"), # setpoint hold value
 				html.Div(id='flow-meter-readout-values'), # Hidden div inside the app that stores the data from the live db
+				html.Div(id='microwave-state-relais-24'), # state of the relais 24
+				html.Div(id='microwave-state-relais-5'), # state of the relais 5
 			],
 			style={"visibility": "hidden"},
 		),
@@ -1027,6 +1046,12 @@ base_layout = html.Div(
 ################################################################################################################################################
 # callbacks
 ################################################################################################################################################
+
+
+# ********************************
+# FLOW METER
+# ********************************
+
 # Start  the flow meter readout from the database
 @app.callback(
 	Output("flow-meter-readout-start-time", "children"),
@@ -1102,7 +1127,7 @@ def flow_meter_setpoint_button(n_clicks, setpoint_value):
 # callback to read the database and store in a json objective
 @app.callback(
 	Output('flow-meter-readout-values', 'children'),
-	[Input('flow-meter-readout-interval', 'n_intervals')],
+	[Input('readout-interval', 'n_intervals')],
 	[State("flow-meter-readout-command-string", "children")]
 	)
 def retrieve_data(intervals, command_string):
@@ -1123,7 +1148,7 @@ def retrieve_data(intervals, command_string):
 # Textarea Communication
 @app.callback(
 	Output("flow-meter-status-monitor", "value"),
-	[Input("flow-meter-readout-interval", "n_intervals")],
+	[Input("readout-interval", "n_intervals")],
 	[State("flow-meter-setpoint-value", "children"),
 	State("flow-meter-readout-command-string", "children"),
 	State("flow-meter-readout-values", "children")]
@@ -1207,12 +1232,6 @@ def plot_graph_data(json_data):
 			name='dose [muSv/hr]'
 		))
 
-
-
-
-
-
-
 	return {
 		'data': traces,
 		'layout': go.Layout(
@@ -1223,3 +1242,17 @@ def plot_graph_data(json_data):
 			hovermode='closest'
 		)
 	}
+
+# ********************************
+# MICROWAVE
+# ********************************
+
+# Color 24V relais red or green depending on its state
+@app.callback(
+	Output("microwave-state-relais-24", "children"),
+	[Input("readout-interval", "intervals")]
+)
+def microwave_color_relais_24(intervals, sql_engine):
+	# call the function to read the state df
+	df = getState(sql_engine)
+	print(df)
