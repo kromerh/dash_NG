@@ -124,12 +124,8 @@ def insertMicrowaveReadoutIntoTable(frequency_soll, power_soll, temp1, temp2, re
 		sql_engine.execute("INSERT INTO microwave_generator_power (power) VALUES (%(val)s)" % {"val": power_soll})
 	if (float(temp1) > -1) & (float(temp2) > -1):
 		sql_engine.execute("INSERT INTO microwave_generator_temperature (temperature1, temperature2) VALUES (%(val1)s, %(val2)s)" % {"val1": temp1, "val2": temp2})
-	if float(relais_5) > -1:
-		sql_engine.execute("INSERT INTO microwave_generator_state (relais_5) VALUES (%(relais_5)s)" % {"relais_5": relais_5})
-	if float(relais_24) > -1:
-		sql_engine.execute("INSERT INTO microwave_generator_state (relais_24) VALUES (%(relais_24)s)" % {"relais_24": relais_24})
-	if float(rf_status) > -1:
-		sql_engine.execute("INSERT INTO microwave_generator_state (rf_status) VALUES (%(rf_status)s)" % {"rf_status": rf_status})
+	if (float(relais_5) > -1) or (float(relais_24) > -1) or (float(rf_status) > -1):
+		sql_engine.execute("INSERT INTO microwave_generator_state (relais_5, relais_24, rf_status) VALUES (%(relais_5)s, %(relais_24)s, %(rf_status)s)" % {"relais_5": relais_5, "relais_24": relais_24, "rf_status": rf_status})
 	if (float(power_out) > -1) & (float(power_reflected) > -1):
 		sql_engine.execute("INSERT INTO microwave_generator_reflected_power (power_out, power_reflected) VALUES (%(power_out)s, %(power_reflected)s)" % {"power_out": power_out, "power_reflected": power_reflected})
 	if (float(DLL_frequency) > -1) & (float(DLL_reflexion) > -1):
