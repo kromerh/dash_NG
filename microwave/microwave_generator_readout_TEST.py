@@ -38,11 +38,12 @@ credentials = pd.read_csv(credentials_file, header=0)
 user = credentials['username'].values[0]
 pw = credentials['password'].values[0]
 
-host="129.129.150.87",  # your host
+host="twofast-rpi3-0",  # your host
 user=user  # username
 passwd=pw  # password
 db="NG_twofast_DB" # name of the database
-connect_string = 'mysql+pymysql://%(user)s:%(pw)s@%(host)s:3306/%(db)s'% {"user": user, "pw": pw, "host": host, "db": db}
+# connect_string = 'mysql+pymysql://%(user)s:%(pw)s@%(host)s:3306/%(db)s'% {"user": user, "pw": pw, "host": host, "db": db}
+connect_string = 'mysql+pymysql://reader:heiko@twofast-rpi3-0:3306/NG_twofast_DB'
 sql_engine = sql.create_engine(connect_string)
 
 # truncate the command table
