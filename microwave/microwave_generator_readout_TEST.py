@@ -50,7 +50,7 @@ sql_engine = sql.create_engine(connect_string)
 sql_engine.execute("TRUNCATE TABLE microwave_generator_command")
 
 
-sql_engine.execute("INSERT INTO microwave_generator_control (command, executed) VALUES ('a 1 test', 0)")
+sql_engine.execute("INSERT INTO microwave_generator_command (command, executed) VALUES ('a 1 test', 0)")
 
 def getCommandsToExecute(sql_engine):
 	"""
