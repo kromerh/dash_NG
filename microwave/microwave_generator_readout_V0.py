@@ -420,6 +420,9 @@ while True:
 		if master_mode == 'testing':
 			readMicrowave('TEST', 'normal', readline_buffer)
 
+			# sleep a little bit to simulate the serial connection delay
+			sleep(0.5)
+
 			# sys.exit()
 	except KeyboardInterrupt:
 		print('Ctrl + C. Exiting. Flushing serial connection.')
