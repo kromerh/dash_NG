@@ -232,7 +232,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	print('temp1 response: %(resp)s' % {"resp": response})
 
 	t_ = re.findall(r':(\d+).*[^0-9](\d+)', response)
-	print(t_)
+
 	if (len(t_) > 0) & (cmd in response):
 		temp1 = t_[0][0]
 		temp2 = t_[0][1]
@@ -255,7 +255,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	# read serial, will return $FVRG:1 (activated) or $FVRG:0 (deactivated)
 	if master_mode == 'testing':
 		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
-		response = '$FVRG:ERROR'
+		response = '$FVRG:0'
 	else:
 		response = str(ser.readline(readline_buffer))
 	print('relais_5 response: %(resp)s' % {"resp": response})
@@ -281,7 +281,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	# read serial, will return $PLRG:1 (activated) or $PLRG:0 (deactivated)
 	if master_mode == 'testing':
 		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
-		response = '$PLRG:1'
+		response = '$PLRG:0'
 	else:
 		response = str(ser.readline(readline_buffer))
 	print('relais_24 response: %(resp)s' % {"resp": response})
