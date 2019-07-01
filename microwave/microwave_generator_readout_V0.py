@@ -50,7 +50,7 @@ sql_engine.execute("TRUNCATE TABLE microwave_generator_command")
 
 
 
-def getCommandsToExecute(mysql_connection):
+def getCommandsToExecute(sql_engine):
 	"""
 	Get the last 5 commands that were not executed. Returns the dataframe
 	"""
@@ -65,36 +65,22 @@ def getCommandsToExecute(mysql_connection):
 	return df
 
 
-
-def updateCommandAsExecuted(command_id, timeNow, answer, mysql_connection):
+def updateCommandAsExecuted(command_id, timeNow, answer, sql_engine):
 	"""
 	After the command was sent to the microwave generator (and no error returned), update in the database that the command has been sent.
 	answer: response from the microwave generator
 	"""
 	timeExecuted = timeNow.strftime('%Y-%m-%d %H:%M:%S')
-	cur = mysql_connection.cursor()
-	try:
-		cur.execute("UPDATE microwave_generator_command SET executed = 1, time_executed = '%(time)s', answer = %(answer)s WHERE id = %(commandId)s" % {"time": timeExecuted, "commandId": command_id, "answer": answer})
-	except:
-		cur.rollback()
-
-	mysql_connection.commit()
-	cur.close()
+	sql_engine.execute("UPDATE microwave_generator_command SET executed = 1, time_executed = '%(time)s', answer = %(answer)s WHERE id = %(commandId)s" % {"time": timeExecuted, "commandId": command_id, "answer": answer})
 
 
-def switchDLLstateInControlTable(mysql_connection):
+
+def switchDLLstateInControlTable(sql_engine):
 	timeExecuted = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-	cur = mysql_connection.cursor()
-	try:
-		cur.execute("UPDATE microwave_generator_control SET DLL_on = 1 - DLL_on, time = '%(timeExecuted)s' WHERE id = 1" % {"timeExecuted": timeExecuted})
-	except:
-		cur.rollback()
-
-	mysql_connection.commit()
-	cur.close()
+	sql_engine.execute("UPDATE microwave_generator_control SET DLL_on = 1 - DLL_on, time = '%(timeExecuted)s' WHERE id = 1" % {"timeExecuted": timeExecuted})
 
 
-def sendCommandToMicrowave(command, ser, command_id, mysql_connection, readline_buffer=500):
+def sendCommandToMicrowave(command, ser, command_id, sql_engine, readline_buffer=500):
 	"""
 	Takes one command and the serial connection to the microwave generator as input and sends command via serial to the microwave.
 	command: is the full command
@@ -122,51 +108,38 @@ def sendCommandToMicrowave(command, ser, command_id, mysql_connection, readline_
 
 	# call updateCommandAsExecuted(command_id, timeExecuted, answer) to update executed to 1 and store answer from the microwave generator
 	timeNow = datetime.datetime.now()
-	updateCommandAsExecuted(command_id, timeNow, response, mysql_connection)
+	updateCommandAsExecuted(command_id, timeNow, response, sql_engine)
 
 
 	# if the command is to turn the DLL_on, update the control table
 	if ('DLL' in cmd) & ('OK' in response):
 		# toggle the DLL_on column value in the control table
-		switchDLLstateInControlTable(mysql_connection)
+		switchDLLstateInControlTable(sql_engine)
 
 
-def insertMicrowaveReadoutIntoTable(frequency_soll, power_soll, temp1, temp2, relais_5, relais_24, rf_status, power_out, power_reflected, DLL_frequency, DLL_reflexion, mysql_connection):
-	cur = mysql_connection.cursor()
-	try:
-		if float(frequency_soll) > -1:
-			cur.execute("INSERT INTO microwave_generator_frequency (frequency) VALUES (%(val)s)" % {"val": frequency_soll})
-		if float(power_soll) > -1:
-			cur.execute("INSERT INTO microwave_generator_power (power) VALUES (%(val)s)" % {"val": power_soll})
-		if (float(temp1) > -1) & (float(temp2) > -1):
-			cur.execute("INSERT INTO microwave_generator_temperature (temperature1, temperature2) VALUES (%(val1)s, %(val2)s)" % {"val1": temp1, "val2": temp2})
-		if float(relais_5) > -1:
-			cur.execute("INSERT INTO microwave_generator_state (relais_5) VALUES (%(relais_5)s)" % {"relais_5": relais_5})
-		if float(relais_24) > -1:
-			cur.execute("INSERT INTO microwave_generator_state (relais_24) VALUES (%(relais_24)s)" % {"relais_24": relais_24})
-		if float(rf_status) > -1:
-			cur.execute("INSERT INTO microwave_generator_state (rf_status) VALUES (%(rf_status)s)" % {"rf_status": rf_status})
-		if (float(power_out) > -1) & (float(power_reflected) > -1):
-			cur.execute("INSERT INTO microwave_generator_reflected_power (power_out, power_reflected) VALUES (%(power_out)s, %(power_reflected)s)" % {"power_out": power_out, "power_reflected": power_reflected})
-		if (float(DLL_frequency) > -1) & (float(DLL_reflexion) > -1):
-			cur.execute("INSERT INTO microwave_generator_DLL (DLL_frequency, DLL_reflexion) VALUES (%(DLL_frequency)s, %(DLL_reflexion)s)" % {"DLL_frequency": DLL_frequency, "DLL_reflexion": DLL_reflexion})
-
-	except:
-		cur.rollback()
-
-	mysql_connection.commit()
-	cur.close()
+def insertMicrowaveReadoutIntoTable(frequency_soll, power_soll, temp1, temp2, relais_5, relais_24, rf_status, power_out, power_reflected, DLL_frequency, DLL_reflexion, sql_engine):
+	if float(frequency_soll) > -1:
+		sql_engine.execute("INSERT INTO microwave_generator_frequency (frequency) VALUES (%(val)s)" % {"val": frequency_soll})
+	if float(power_soll) > -1:
+		sql_engine.execute("INSERT INTO microwave_generator_power (power) VALUES (%(val)s)" % {"val": power_soll})
+	if (float(temp1) > -1) & (float(temp2) > -1):
+		sql_engine.execute("INSERT INTO microwave_generator_temperature (temperature1, temperature2) VALUES (%(val1)s, %(val2)s)" % {"val1": temp1, "val2": temp2})
+	if float(relais_5) > -1:
+		sql_engine.execute("INSERT INTO microwave_generator_state (relais_5) VALUES (%(relais_5)s)" % {"relais_5": relais_5})
+	if float(relais_24) > -1:
+		sql_engine.execute("INSERT INTO microwave_generator_state (relais_24) VALUES (%(relais_24)s)" % {"relais_24": relais_24})
+	if float(rf_status) > -1:
+		sql_engine.execute("INSERT INTO microwave_generator_state (rf_status) VALUES (%(rf_status)s)" % {"rf_status": rf_status})
+	if (float(power_out) > -1) & (float(power_reflected) > -1):
+		sql_engine.execute("INSERT INTO microwave_generator_reflected_power (power_out, power_reflected) VALUES (%(power_out)s, %(power_reflected)s)" % {"power_out": power_out, "power_reflected": power_reflected})
+	if (float(DLL_frequency) > -1) & (float(DLL_reflexion) > -1):
+		sql_engine.execute("INSERT INTO microwave_generator_DLL (DLL_frequency, DLL_reflexion) VALUES (%(DLL_frequency)s, %(DLL_reflexion)s)" % {"DLL_frequency": DLL_frequency, "DLL_reflexion": DLL_reflexion})
 
 
-def insertIntoDLLTable(DLL_frequency, DLL_reflexion, mysql_connection):
-	cur = mysql_connection.cursor()
-	try:
-		cur.execute("UPDATE microwave_generator_DLL SET DLL_frequency = %(DLL_frequency)s, DLL_reflexion = %(DLL_reflexion)s" % {"DLL_frequency": DLL_frequency, "DLL_reflexion": DLL_reflexion})
-	except:
-		cur.rollback()
 
-	mysql_connection.commit()
-	cur.close()
+def insertIntoDLLTable(DLL_frequency, DLL_reflexion, sql_engine):
+	sql_engine.execute("UPDATE microwave_generator_DLL SET DLL_frequency = %(DLL_frequency)s, DLL_reflexion = %(DLL_reflexion)s" % {"DLL_frequency": DLL_frequency, "DLL_reflexion": DLL_reflexion})
+
 
 
 def readMicrowave(ser, mode='normal', readline_buffer=500):
@@ -384,7 +357,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 
 	# check if the DLL is on or off
 	query = "SELECT DLL_on FROM `microwave_generator_control` WHERE id = 1"
-	df = pd.read_sql(query, mysql_connection)
+	df = pd.read_sql(query, sql_engine)
 	DLL_on = df['DLL_on'].values[0]
 
 	if DLL_on == 1:
@@ -416,7 +389,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 		else:
 			print('ERROR DLL_frequency, DLL_reflexion response: {response}')
 
-	insertMicrowaveReadoutIntoTable(frequency_soll, power_soll, temp1, temp2, relais_5, relais_24, rf_status, power_out, power_reflected, DLL_frequency, DLL_reflexion, mysql_connection)
+	insertMicrowaveReadoutIntoTable(frequency_soll, power_soll, temp1, temp2, relais_5, relais_24, rf_status, power_out, power_reflected, DLL_frequency, DLL_reflexion, sql_engine)
 
 
 while True:
@@ -424,7 +397,7 @@ while True:
 		sleep(0.2) # sleep mind. 200 ms, 1/250 ms is the maximal readout frequency that the microwave generator can handle
 
 		# read the list of not executed commands from the database
-		df_commands = getCommandsToExecute(mysql_connection)
+		df_commands = getCommandsToExecute(sql_engine)
 
 		# if there are some commands to execute, send them all to the microwave generator
 		if len(df_commands) > 0:
@@ -439,8 +412,8 @@ while True:
 				cmd_id = str(row['id'])
 
 				# send the command, in there it also updates the time and sets executed to 1
-				# def sendCommandToMicrowave(command, ser, command_id, mysql_connection, readline_buffer=500)
-				sendCommandToMicrowave(cmd, ser, cmd_id, mysql_connection, readline_buffer)
+				# def sendCommandToMicrowave(command, ser, command_id, sql_engine, readline_buffer=500)
+				sendCommandToMicrowave(cmd, ser, cmd_id, sql_engine, readline_buffer)
 
 
 		# read the microwave generator
