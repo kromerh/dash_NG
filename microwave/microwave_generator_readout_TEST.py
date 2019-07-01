@@ -38,7 +38,7 @@ credentials = pd.read_csv(credentials_file, header=0)
 user = credentials['username'].values[0]
 pw = credentials['password'].values[0]
 
-host="twofast-RPi3-0",  # your host
+host="129.129.150.87",  # your host
 user=user  # username
 passwd=pw  # password
 db="NG_twofast_DB" # name of the database
