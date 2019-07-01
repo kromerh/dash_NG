@@ -127,7 +127,7 @@ def sendCommandToMicrowave(command, ser, command_id, mysql_connection, readline_
 		print('Testing inside sendCommandToMicrowave: response = str(ser.readline(readline_buffer))')
 	else:
 		response = str(ser.readline(readline_buffer))
-	print(f'Response when sending command {cmd} is {response}')
+	print('Response when sending command %(cmd)s is %(response)s' % {"cmd": cmd, "response": response})
 
 	# call updateCommandAsExecuted(command_id, timeExecuted, answer) to update executed to 1 and store answer from the microwave generator
 	timeNow = datetime.datetime.now()
