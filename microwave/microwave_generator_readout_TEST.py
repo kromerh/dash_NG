@@ -43,9 +43,29 @@ user=user # username
 passwd=pw  # password
 db="NG_twofast_DB" # name of the database
 connect_string = 'mysql+pymysql://%(user)s:%(pw)s@%(host)s:3306/%(db)s'% {"user": user, "pw": pw, "host": host, "db": db}
-# connect_string = "mysql+pymysql://" + str(user) + ":" + str(pw) + "@" + str(host) + ":3306/" + str(db)
-print(connect_string)
+
 sql_engine = sql.create_engine(connect_string)
 
 # truncate the command table
 sql_engine.execute("TRUNCATE TABLE microwave_generator_command")
+
+
+sql_engine.execute("INSERT INTO microwave_generator_control (command, executed) VALUES ('a 1 test', 0)")
+
+def getCommandsToExecute(sql_engine):
+	"""
+	Get the last 5 commands that were not executed. Returns the dataframe
+	"""
+	query = "SELECT * FROM microwave_generator_command WHERE executed = 0 ORDER BY time_created ASC LIMIT 5"
+	df = pd.read_sql(query, sql_engine)
+
+	if master_mode == 'testing':
+		print('Testing: getCommandsToExecute, dataframe is:')
+		print(df)
+
+	# columns: time_created (timestamp), time_executed (timestamp), command (text), executed (1 or 0), id (primary key)
+	return df
+
+df_commands = getCommandsToExecute(sql_engine)
+
+print(df_commands)
