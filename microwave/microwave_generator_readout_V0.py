@@ -7,13 +7,22 @@ import pandas as pd
 import pymysql
 import re
 
+master_mode = 'testing'
+# master_mode = 'operation'
+
+
+
 # *****************
 # SERIAL CONNECTION
 # *****************
 
 # Serial connection to the microwave generator
 microwavePort = '/dev/ttyACM0' # NOT THIS ONE probably. check with /dev/tty* before and after connecting the microwave generator
-ser = serial.Serial(microwavePort, 115200) # Baud 115200, Data Bits: 8, StopBits: 1, Parity: none, FlowControl: none
+if master_mode == 'testing':
+	print('Testing: serial.Serial(microwavePort, 115200)')
+else:
+	ser = serial.Serial(microwavePort, 115200) # Baud 115200, Data Bits: 8, StopBits: 1, Parity: none, FlowControl: none
+
 print('Connected to microwavePort')
 sleep(0.1)  # sleep to connect to microwave generator
 
@@ -49,14 +58,16 @@ cur.close()
 
 
 
-
-
 def getCommandsToExecute(mysql_connection):
 	"""
 	Get the last 5 commands that were not executed. Returns the dataframe
 	"""
 	query = "SELECT * FROM microwave_generator_command WHERE executed = 0 ORDER BY time_created ASC LIMIT 5"
 	df = pd.read_sql(query, mysql_connection)
+
+	if master_mode == 'testing':
+		print('Testing: getCommandsToExecute, dataframe is:')
+		print(df)
 
 	# columns: time_created (timestamp), time_executed (timestamp), command (text), executed (1 or 0), id (primary key)
 	return df
@@ -102,13 +113,19 @@ def sendCommandToMicrowave(command, ser, command_id, readline_buffer=500, mysql_
 
 	# send the command
 	cmd = command
-	ser.write(cmd.encode())
+	if master_mode == 'testing':
+		print('Testing inside sendCommandToMicrowave: ser.write(cmd.encode())')
+	else:
+		ser.write(cmd.encode())
 
 	# sleep 0.01 s
 	sleep(0.01)
 
 	# get answer
-	response = str(ser.readline(readline_buffer))
+	if master_mode == 'testing':
+		print('Testing inside sendCommandToMicrowave: response = str(ser.readline(readline_buffer))')
+	else:
+		response = str(ser.readline(readline_buffer))
 	print(f'Response when sending command {cmd} is {response}')
 
 	# call updateCommandAsExecuted(command_id, timeExecuted, answer) to update executed to 1 and store answer from the microwave generator
@@ -184,13 +201,20 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 
 	# send read command frequency_soll: $FRQG
 	cmd = '$FRQG'
-	ser.write(cmd.encode())
+	if master_mode == 'testing':
+		print('Testing inside readMicrowave: ser.write(cmd.encode()) cmd=' + cmd)
+	else:
+		ser.write(cmd.encode())
 
 	# sleep 0.01 s
 	sleep(0.01)
 
 	# read serial, will return $FRQG:2450MHz
-	response = str(ser.readline(readline_buffer))
+	if master_mode == 'testing':
+		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
+		response = '$FRQG:2450MHz'
+	else:
+		response = str(ser.readline(readline_buffer))
 	t_ = re.findall(r':(\d+)', response)
 	print('frequency_soll response: {response}')
 
@@ -205,14 +229,21 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 
 	# send read command power_soll: $PWRG
 	cmd = '$PWRG'
-	ser.write(cmd.encode())
+	if master_mode == 'testing':
+		print('Testing inside readMicrowave: ser.write(cmd.encode()) cmd=' + cmd)
+	else:
+		ser.write(cmd.encode())
 
 	# sleep 0.01 s
 	sleep(0.01)
 
 	# read serial, will return $PWRG:250.2W
-	response = str(ser.readline(readline_buffer))
-	t_ = re.findall(r':(\d+)', response)
+	if master_mode == 'testing':
+		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
+		response = '$PWRG:250.2W'
+	else:
+		response = str(ser.readline(readline_buffer))
+	t_ = re.findall(r':(.+)W', response)
 	print('power_soll response: {response}')
 
 	if (len(t_) > 0) & (cmd in response):
@@ -223,13 +254,20 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 
 	# send read command temp1 and temp2: $TMPG
 	cmd = '$TMPG'
-	ser.write(cmd.encode())
+	if master_mode == 'testing':
+		print('Testing inside readMicrowave: ser.write(cmd.encode()) cmd=' + cmd)
+	else:
+		ser.write(cmd.encode())
 
 	# sleep 0.01 s
 	sleep(0.01)
 
 	# read serial, will return $TMPG:19oC,20oC
-	response = str(ser.readline(readline_buffer))
+	if master_mode == 'testing':
+		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
+		response = '$TMPG:19oC,20oC'
+	else:
+		response = str(ser.readline(readline_buffer))
 	print('temp1 response: {response}')
 
 	t_ = re.findall(r':(\d+).*[^0-9](\d+)', response)
@@ -244,13 +282,21 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 
 	# send read command relais_5: $FVRG
 	cmd = '$FVRG'
-	ser.write(cmd.encode())
+	if master_mode == 'testing':
+		print('Testing inside readMicrowave: ser.write(cmd.encode()) cmd=' + cmd)
+	else:
+		ser.write(cmd.encode())
+
 
 	# sleep 0.01 s
 	sleep(0.01)
 
 	# read serial, will return $FVRG:1 (activated) or $FVRG:0 (deactivated)
-	response = str(ser.readline(readline_buffer))
+	if master_mode == 'testing':
+		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
+		response = '$FVRG:1'
+	else:
+		response = str(ser.readline(readline_buffer))
 	print('relais_5 response: {response}')
 
 	t_ = re.findall(r':(\d+)', response)
@@ -263,13 +309,20 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 
 	# send read command relais_24: $PLRG
 	cmd = '$PLRG'
-	ser.write(cmd.encode())
+	if master_mode == 'testing':
+		print('Testing inside readMicrowave: ser.write(cmd.encode()) cmd=' + cmd)
+	else:
+		ser.write(cmd.encode())
 
 	# sleep 0.01 s
 	sleep(0.01)
 
-	# read serial, will return $FVRG:1 (activated) or $FVRG:0 (deactivated)
-	response = str(ser.readline(readline_buffer))
+	# read serial, will return $PLRG:1 (activated) or $PLRG:0 (deactivated)
+	if master_mode == 'testing':
+		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
+		response = '$PLRG:1'
+	else:
+		response = str(ser.readline(readline_buffer))
 	print('relais_24 response: {response}')
 
 	t_ = re.findall(r':(\d+)', response)
@@ -283,13 +336,20 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 
 	# send read command rf_status: $ENAG
 	cmd = '$ENAG'
-	ser.write(cmd.encode())
+	if master_mode == 'testing':
+		print('Testing inside readMicrowave: ser.write(cmd.encode()) cmd=' + cmd)
+	else:
+		ser.write(cmd.encode())
 
 	# sleep 0.01 s
 	sleep(0.01)
 
-	# read serial, will return $FVRG:1 (activated) or $FVRG:0 (deactivated)
-	response = str(ser.readline(readline_buffer))
+	# read serial, will return $ENAG:1 (activated) or $ENAG:0 (deactivated)
+	if master_mode == 'testing':
+		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
+		response = '$ENAG:1'
+	else:
+		response = str(ser.readline(readline_buffer))
 	print('rf_status response: {response}')
 
 	t_ = re.findall(r':(\d+)', response)
@@ -304,34 +364,20 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 
 	# send read command power_out and power_reflected: $FRPG
 	cmd = '$FRPG'
-	ser.write(cmd.encode())
+	if master_mode == 'testing':
+		print('Testing inside readMicrowave: ser.write(cmd.encode()) cmd=' + cmd)
+	else:
+		ser.write(cmd.encode())
 
 	# sleep 0.01 s
 	sleep(0.1)
 
-	# read serial, will return $FVRG:1 (activated) or $FVRG:0 (deactivated)
-	response = str(ser.readline(readline_buffer))
-	print('power_out, power_reflected response: {response}')
-
-	t_ = re.findall(r':(\d+\.\d)W,(\d+\.\d)W', response)
-
-	if (len(t_) > 1) & (cmd in response):
-	    power_out = t_[0]
-	    power_reflected = t_[1]
-
-    else:
-    	print('ERROR power_out, power_reflected response: {response}')
-
-
-	# send read command DLL_frequency, DLL_reflexion: $DLE
-	cmd = '$FRPG'
-	ser.write(cmd.encode())
-
-	# sleep 0.01 s
-	sleep(0.1)
-
-	# read serial, will return $FVRG:1 (activated) or $FVRG:0 (deactivated)
-	response = str(ser.readline(readline_buffer))
+	# read serial, will return $FRPG:120.0W,24.2W
+	if master_mode == 'testing':
+		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
+		response = '$FRPG:120.0W,24.2W'
+	else:
+		response = str(ser.readline(readline_buffer))
 	print('power_out, power_reflected response: {response}')
 
 	t_ = re.findall(r':(\d+\.\d)W,(\d+\.\d)W', response)
@@ -352,13 +398,20 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	if DLL_on == 1:
 
 		cmd = '$DLE'
-		ser.write(cmd.encode())
+		if master_mode == 'testing':
+			print('Testing inside readMicrowave: ser.write(cmd.encode()) cmd=' + cmd)
+		else:
+			ser.write(cmd.encode())
 
 		# sleep 0.01 s
 		sleep(0.1)
 
 		# read serial, will return DLL_frequency, DLL_reflexion $DLE,2449,-2.18dB
-		response = str(ser.readline(readline_buffer))
+		if master_mode == 'testing':
+			print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
+			response = '$DLE:2449,-2.18dB'
+		else:
+			response = str(ser.readline(readline_buffer))
 		print('DLL_frequency, DLL_reflexion response: {response}')
 
 		t_ = re.findall(r',(\d+),(.*\.\d+)dB', response)
@@ -399,43 +452,12 @@ while True:
 
 		# read the microwave generator
 		readMicrowave(ser, mode='normal', readline_buffer=500)
-
-		# SETPOINT VALUE OF FLOW METER
-		# read the database for the setpoint value
-		setpoint_voltage = getFlowMeterControlValues()
-
-		# convert
-		valueSend = str(setpoint_voltage)
-
-		# send
-		ser.write(valueSend.encode()) # Convert the decimal number to ASCII then send it to the Arduino
-
-		print("Sending to Arduino:" + str(valueSend.encode()))
-
-		sleep(0.5) # Delay
-
-		# READING OF FLOW METER
-		valueRead = ser.readline(500) # b'V_1 1.30, 4.20, V_out 215.04\r\n'
-
-		print('Raw reading from Arduino:' + str(valueRead)) # Read the newest output from the Arduino
-		voltageStr = str(valueRead).split(',')
-
-		voltageStr = voltageStr[0]
-
-
-
-		t = re.findall(r'V_1 (.+)', voltageStr)
-
-		if len(t) > 0:
-			voltage = t[0]
-			# print(voltage)
-			saveFlowMeterVoltageToDB(voltage) # save into DB
-
-		sleep(0.5) # Delay
-		ser.flushInput()  #flush input buffer, discarding all its contents
-		ser.flushOutput() #flush output buffer, aborting current output and discard all that is in buffer
+		if master_mode == 'operation':
+			ser.flushInput()  #flush input buffer, discarding all its contents
+			ser.flushOutput() #flush output buffer, aborting current output and discard all that is in buffer
 	except KeyboardInterrupt:
 		print('Ctrl + C. Exiting. Flushing serial connection.')
-		ser.flushInput()  #flush input buffer, discarding all its contents
-		ser.flushOutput() #flush output buffer, aborting current output and discard all that is in buffer
+		if master_mode == 'operation':
+			ser.flushInput()  #flush input buffer, discarding all its contents
+			ser.flushOutput() #flush output buffer, aborting current output and discard all that is in buffer
 		sys.exit(1)
