@@ -47,7 +47,7 @@ def setFlowMeterControlValues(value, sql_engine):
 	print(f'Updated setpoint_voltage {value} in flow_meter_control table.')
 
 
-def readFlowMeterVoltage(pastSeconds=60, sql_engine): # read past 60secs by default
+def readFlowMeterVoltage(sql_engine, pastSeconds=60): # read past 60secs by default
 	"""
 	Read the flow meter voltage read from the database
 	"""
@@ -1110,7 +1110,7 @@ def retrieve_data(intervals, command_string):
 	# print(command_string)
 	if command_string == 'START':
 		 # some expensive clean data step
-		 df = readFlowMeterVoltage(300)  # retrieve the past 60 seconds
+		 df = readFlowMeterVoltage(sql_engine, 300)  # retrieve the past 60 seconds
 		 # print('Inside retrieve_data')
 		 # print(df)
 		 # more generally, this line would be
