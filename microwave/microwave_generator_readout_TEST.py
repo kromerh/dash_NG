@@ -42,7 +42,7 @@ host="twofast-RPi3-0",  # your host
 user=user  # username
 passwd=pw  # password
 db="NG_twofast_DB" # name of the database
-connect_string = 'mysql+pymysql://%(user)s:%(pw)s@%(host)s/%(db)s'% {"user": user, "pw": pw, "host": host, "db": db}
+connect_string = 'pymysql://%(user)s:%(pw)s@%(host)s/%(db)s'% {"user": user, "pw": pw, "host": host, "db": db}
 sql_engine = sql.create_engine(connect_string)
 
 # truncate the command table
