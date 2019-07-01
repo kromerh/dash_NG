@@ -29,8 +29,8 @@ index_page = html.Div([
 @app.callback(dash.dependencies.Output('page-content', 'children'),
 			  [dash.dependencies.Input('url', 'pathname')])
 def display_page(pathname):
-	if pathname == '/apps/app_flow_meter':
-		return app_flow_meter.base_layout
+	if pathname == '/apps/app_flowmeter_microwave':
+		return app_flowmeter_microwave.base_layout
 	else:
 		return index_page
 	# You could also return a 404 "URL not found" page here

@@ -40,8 +40,7 @@ def setFlowMeterControlValues(value, sql_engine):
 	"""
 	Sets the entry for the setpoint value in the database according to the user specified value
 	"""
-
-	query= "UPDATE flow_meter_control SET setpoint_voltage = %(setpoint_voltage)s" % {"setpoint_voltage": setpoint_voltage}
+	query= "UPDATE flow_meter_control SET setpoint_voltage = %(setpoint_voltage)s" % {"setpoint_voltage": value}
 	sql_engine.execute(query)
 
 	print(f'Updated setpoint_voltage {value} in flow_meter_control table.')
