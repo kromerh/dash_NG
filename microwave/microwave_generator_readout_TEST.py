@@ -37,7 +37,7 @@ credentials_file = r'./credentials.pw'
 credentials = pd.read_csv(credentials_file, header=0)
 user = credentials['username'].values[0]
 pw = credentials['password'].values[0]
-
+print(user,pw)
 host="twofast-rpi3-0",  # your host
 user=user  # username
 passwd=pw  # password
