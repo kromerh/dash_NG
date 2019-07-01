@@ -237,9 +237,9 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 
 	t_ = re.findall(r':(\d+).*[^0-9](\d+)', response)
 	print(t_)
-	if (len(t_) > 1) & (cmd in response):
-		temp1 = t_[0]
-		temp2 = t_[1]
+	if (len(t_) > 0) & (cmd in response):
+		temp1 = t_[0][0]
+		temp2 = t_[0][1]
 	else:
 		print('ERROR temp1 response: %(resp)s' % {"resp": response})
 
@@ -347,9 +347,9 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 
 	t_ = re.findall(r':(\d+\.\d)W,(\d+\.\d)W', response)
 
-	if (len(t_) > 1) & (cmd in response):
-		power_out = t_[0]
-		power_reflected = t_[1]
+	if (len(t_) > 0) & (cmd in response):
+		power_out = t_[0][0]
+		power_reflected = t_[0][1]
 
 	else:
 		print('ERROR power_out, power_reflected response: %(resp)s' % {"resp": response})
@@ -382,9 +382,9 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 		t_ = re.findall(r',(\d+),(.*\.\d+)dB', response)
 
 
-		if (len(t_) > 1) & (cmd in response):
-			DLL_frequency = t_[0]
-			DLL_reflexion = t_[1]
+		if (len(t_) > 0) & (cmd in response):
+			DLL_frequency = t_[0][0]
+			DLL_reflexion = t_[0][1]
 
 		else:
 			print('ERROR DLL_frequency, DLL_reflexion response: %(resp)s' % {"resp": response})
