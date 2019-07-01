@@ -181,13 +181,13 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	else:
 		response = str(ser.readline(readline_buffer))
 	t_ = re.findall(r':(\d+)', response)
-	print('frequency_soll response: {response}')
+	print('frequency_soll response: %(resp)s' % {"resp": response})
 
 	# extract the frequency from the response and if it is the good one, send it to the database
 	if (len(t_) > 0) & (cmd in response):
 		frequency_soll = t_[0]
 	else:
-		print('ERROR frequency_soll response: {response}')
+		print('ERROR frequency_soll response: %(resp)s' % {"resp": response})
 
 
 
@@ -209,12 +209,12 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	else:
 		response = str(ser.readline(readline_buffer))
 	t_ = re.findall(r':(.+)W', response)
-	print('power_soll response: {response}')
+	print('power_soll response: %(resp)s' % {"resp": response})
 
 	if (len(t_) > 0) & (cmd in response):
 		power_soll = t_[0]
 	else:
-		print('ERROR power_soll response: {response}')
+		print('ERROR power_soll response: %(resp)s' % {"resp": response})
 
 
 	# send read command temp1 and temp2: $TMPG
@@ -233,7 +233,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 		response = '$TMPG:19oC,20oC'
 	else:
 		response = str(ser.readline(readline_buffer))
-	print('temp1 response: {response}')
+	print('temp1 response: %(resp)s' % {"resp": response})
 
 	t_ = re.findall(r':(\d+).*[^0-9](\d+)', response)
 
@@ -241,7 +241,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 		temp1 = t_[0]
 		temp2 = t_[1]
 	else:
-		print('ERROR temp1 response: {response}')
+		print('ERROR temp1 response: %(resp)s' % {"resp": response})
 
 
 
@@ -262,14 +262,14 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 		response = '$FVRG:1'
 	else:
 		response = str(ser.readline(readline_buffer))
-	print('relais_5 response: {response}')
+	print('relais_5 response: %(resp)s' % {"resp": response})
 
 	t_ = re.findall(r':(\d+)', response)
 
 	if (len(t_) > 0) & (cmd in response):
 		relais_5 = t_[0]
 	else:
-		print('ERROR relais_5 response: {response}')
+		print('ERROR relais_5 response: %(resp)s' % {"resp": response})
 
 
 	# send read command relais_24: $PLRG
@@ -288,14 +288,14 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 		response = '$PLRG:1'
 	else:
 		response = str(ser.readline(readline_buffer))
-	print('relais_24 response: {response}')
+	print('relais_24 response: %(resp)s' % {"resp": response})
 
 	t_ = re.findall(r':(\d+)', response)
 
 	if (len(t_) > 0) & (cmd in response):
 		relais_24 = t_[0]
 	else:
-		print('ERROR relais_24 response: {response}')
+		print('ERROR relais_24 response: %(resp)s' % {"resp": response})
 
 
 
@@ -315,14 +315,14 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 		response = '$ENAG:1'
 	else:
 		response = str(ser.readline(readline_buffer))
-	print('rf_status response: {response}')
+	print('rf_status response: %(resp)s' % {"resp": response})
 
 	t_ = re.findall(r':(\d+)', response)
 
 	if (len(t_) > 0) & (cmd in response):
 		rf_status = t_[0]
 	else:
-		print('ERROR rf_status response: {response}')
+		print('ERROR rf_status response: %(resp)s' % {"resp": response})
 
 
 
@@ -343,7 +343,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 		response = '$FRPG:120.0W,24.2W'
 	else:
 		response = str(ser.readline(readline_buffer))
-	print('power_out, power_reflected response: {response}')
+	print('power_out, power_reflected response: %(resp)s' % {"resp": response})
 
 	t_ = re.findall(r':(\d+\.\d)W,(\d+\.\d)W', response)
 
@@ -352,7 +352,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 		power_reflected = t_[1]
 
 	else:
-		print('ERROR power_out, power_reflected response: {response}')
+		print('ERROR power_out, power_reflected response: %(resp)s' % {"resp": response})
 
 
 	# check if the DLL is on or off
@@ -377,7 +377,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 			response = '$DLE:2449,-2.18dB'
 		else:
 			response = str(ser.readline(readline_buffer))
-		print('DLL_frequency, DLL_reflexion response: {response}')
+		print('DLL_frequency, DLL_reflexion response: %(resp)s' % {"resp": response})
 
 		t_ = re.findall(r',(\d+),(.*\.\d+)dB', response)
 
@@ -387,7 +387,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 			DLL_reflexion = t_[1]
 
 		else:
-			print('ERROR DLL_frequency, DLL_reflexion response: {response}')
+			print('ERROR DLL_frequency, DLL_reflexion response: %(resp)s' % {"resp": response})
 
 	insertMicrowaveReadoutIntoTable(frequency_soll, power_soll, temp1, temp2, relais_5, relais_24, rf_status, power_out, power_reflected, DLL_frequency, DLL_reflexion, sql_engine)
 
@@ -423,6 +423,8 @@ while True:
 			ser.flushOutput() #flush output buffer, aborting current output and discard all that is in buffer
 		if master_mode == 'testing':
 			readMicrowave('TEST', 'normal', readline_buffer)
+
+			sys.exit()
 	except KeyboardInterrupt:
 		print('Ctrl + C. Exiting. Flushing serial connection.')
 		if master_mode == 'operation':
