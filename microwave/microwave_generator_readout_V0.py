@@ -370,7 +370,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 		# read serial, will return DLL_frequency, DLL_reflexion $DLE,2449,-2.18dB
 		if master_mode == 'testing':
 			print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
-			response = '$DLE:2449,-2.18dB'
+			response = '$DLE,2449,-2.18dB'
 		else:
 			response = str(ser.readline(readline_buffer))
 		print('DLL_frequency, DLL_reflexion response: %(resp)s' % {"resp": response})
