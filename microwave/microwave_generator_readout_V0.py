@@ -128,7 +128,7 @@ def insertMicrowaveReadoutIntoTable(frequency_soll, power_soll, temp1, temp2, re
 		sql_engine.execute("INSERT INTO microwave_generator_state (relais_5, relais_24, rf_status) VALUES (%(relais_5)s, %(relais_24)s, %(rf_status)s)" % {"relais_5": relais_5, "relais_24": relais_24, "rf_status": rf_status})
 	if (float(power_out) > -1) & (float(power_reflected) > -1):
 		sql_engine.execute("INSERT INTO microwave_generator_reflected_power (power_out, power_reflected) VALUES (%(power_out)s, %(power_reflected)s)" % {"power_out": power_out, "power_reflected": power_reflected})
-	if (float(DLL_frequency) > -1) & (float(DLL_reflexion) > -1):
+	if (float(DLL_frequency) > -1) & (float(DLL_reflexion) > -1000):
 		sql_engine.execute("INSERT INTO microwave_generator_DLL (DLL_frequency, DLL_reflexion) VALUES (%(DLL_frequency)s, %(DLL_reflexion)s)" % {"DLL_frequency": DLL_frequency, "DLL_reflexion": DLL_reflexion})
 
 
@@ -158,7 +158,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	power_out = -1
 	power_reflected = -1
 	DLL_frequency = -1
-	DLL_reflexion = -1
+	DLL_reflexion = -1000
 
 	# send read command frequency_soll: $FRQG
 	cmd = '$FRQG'
