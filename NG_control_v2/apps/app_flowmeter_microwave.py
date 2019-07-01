@@ -7,8 +7,8 @@ import dash
 import plotly.graph_objs as go
 import numpy as np
 import pandas as pd
-
 import pymysql
+import sqlalchemy as sql
 
 import time
 from datetime import datetime
@@ -26,58 +26,33 @@ user = credentials['username'].values[0]
 pw = credentials['password'].values[0]
 
 
+host="twofast-RPi3-0"  # your host
+user=user  # username
+passwd=pw  # password
+db="NG_twofast_DB" # name of the database
+connect_string = 'mysql+pymysql://%(user)s:%(pw)s@%(host)s/%(db)s'% {"user": user, "pw": pw, "host": host, "db": db}
+sql_engine = sql.create_engine(connect_string)
+
 ################################################################################################################################################
 # function
 ################################################################################################################################################
-def setFlowMeterControlValues(value):
+def setFlowMeterControlValues(value, sql_engine):
 	"""
 	Sets the entry for the setpoint value in the database according to the user specified value
 	"""
-	# DOSE
-	mysql_connection = pymysql.connect(host="twofast-RPi3-0",  # your host
-					 user=user,  # username
-					 passwd=pw,  # password
-					 db="NG_twofast_DB", # name of the database
-					 charset='utf8',
-					 cursorclass=pymysql.cursors.DictCursor)
+
+	query= "UPDATE flow_meter_control SET setpoint_voltage = %(setpoint_voltage)s" % {"setpoint_voltage": setpoint_voltage}
+	sql_engine.execute(query)
+
+	print(f'Updated setpoint_voltage {value} in flow_meter_control table.')
 
 
-	try:
-		with mysql_connection.cursor() as cursor:
-			# Create a new record
-			sql = "UPDATE flow_meter_control SET setpoint_voltage = (%s)"
-			cursor.execute(sql, (str(value)))
-
-		# connection is not autocommit by default. So you must commit to save
-		# your changes.
-		mysql_connection.commit()
-		print(f'Updated setpoint_voltage {value} in flow_meter_control table.')
-
-	finally:
-		mysql_connection.close()
-
-def readFlowMeterVoltage(pastSeconds=60): # read past 60secs by default
+def readFlowMeterVoltage(pastSeconds=60, sql_engine): # read past 60secs by default
 	"""
 	Read the flow meter voltage read from the database
 	"""
-
-	db = pymysql.connect(host="twofast-RPi3-0",  # your host
-						 user=user,  # username
-						 passwd=pw,  # password
-						 db="NG_twofast_DB",  # name of the database
-						 charset='utf8',
-						 cursorclass=pymysql.cursors.DictCursor)
-
-
-
-	try:
-		query = """SELECT * FROM flow_meter_readout_live ORDER BY id DESC LIMIT {}""".format(pastSeconds)
-		df = pd.read_sql(query, db)
-
-
-	except:
-		print('Error in plotFlowMeterVoltage')
-
+	query = "SELECT * FROM flow_meter_readout_live ORDER BY id DESC LIMIT %(pastSeconds)s" % {"pastSeconds": pastSeconds}
+	df = pd.read_sql(query, sql_engine)
 
 	return df
 
@@ -85,32 +60,32 @@ def readFlowMeterVoltage(pastSeconds=60): # read past 60secs by default
 # MICROWAVE GENERATOR
 # *****************
 
-def getFrequency(mysql_connection):
+def getFrequency(sql_engine):
 	"""
 	Reads the last 300 seconds of the frequency and returns it in a dataframe
 	"""
 	query = "SELECT * FROM microwave_generator_frequency ORDER BY id DESC LIMIT 300"
-	df = pd.read_sql(query, mysql_connection)
+	df = pd.read_sql(query, sql_engine)
 
 	# columns: time (timestamp), frequency (float), id (primary key)
 	return df
 
-def getPower(mysql_connection):
+def getPower(sql_engine):
 	"""
 	Reads the last 300 seconds of the power and returns it in a dataframe
 	"""
 	query = "SELECT * FROM microwave_generator_power ORDER BY id DESC LIMIT 300"
-	df = pd.read_sql(query, mysql_connection)
+	df = pd.read_sql(query, sql_engine)
 
 	# columns: time (timestamp), power (float), id (primary key)
 	return df
 
-def getTemperature(mysql_connection):
+def getTemperature(sql_engine):
 	"""
 	Reads the last 300 seconds of the two temperatures and returns it in a dataframe
 	"""
 	query = "SELECT * FROM microwave_generator_temperature ORDER BY id DESC LIMIT 300"
-	df = pd.read_sql(query, mysql_connection)
+	df = pd.read_sql(query, sql_engine)
 
 	# columns: time (timestamp), temperature1 (float), temperature2 (float), id (primary key)
 	return df
@@ -1115,7 +1090,7 @@ def flow_meter_setpoint_button(n_clicks, setpoint_value):
 		if (setpoint_value > 0.0) & (setpoint_value < 5.0):
 
 			# update field in the database
-			setFlowMeterControlValues(setpoint_value)
+			setFlowMeterControlValues(setpoint_value, sql_engine)
 
 			# set the value of the slider flow-meter-setpoint-slider"
 			setpoint_value = round(setpoint_value * 1000)

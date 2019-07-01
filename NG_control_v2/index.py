@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output, State
 
 
 from app import app # calls the app
-from apps import app_flow_meter
+from apps import app_flowmeter_microwave
 
 # Dash CSS
 
@@ -21,7 +21,7 @@ app.layout = html.Div([
 
 
 index_page = html.Div([
-	dcc.Link('Go to flow meter control layout', href='/apps/app_flow_meter'),
+	dcc.Link('Go to flow meter and microwave control layout', href='/apps/app_flowmeter_microwave'),
 	html.Br()
 ])
 
