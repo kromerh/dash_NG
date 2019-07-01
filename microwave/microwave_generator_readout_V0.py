@@ -453,7 +453,7 @@ while True:
 
 
 		# read the microwave generator
-		readMicrowave(ser, mode='normal', readline_buffer)
+		readMicrowave(ser, 'normal', readline_buffer)
 		if master_mode == 'operation':
 			ser.flushInput()  #flush input buffer, discarding all its contents
 			ser.flushOutput() #flush output buffer, aborting current output and discard all that is in buffer
