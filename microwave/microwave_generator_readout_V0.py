@@ -201,7 +201,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	# read serial, will return $PWRG:250.2W
 	if master_mode == 'testing':
 		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
-		response = '$PWRG:250.2W'
+		response = '$PWRG:250.1W'
 	else:
 		response = str(ser.readline(readline_buffer))
 	t_ = re.findall(r':(.+)W', response)
@@ -226,7 +226,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	# read serial, will return $TMPG:19oC,20oC
 	if master_mode == 'testing':
 		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
-		response = '$TMPG:19oC,20oC'
+		response = '$TMPG:5oC,20oC'
 	else:
 		response = str(ser.readline(readline_buffer))
 	print('temp1 response: %(resp)s' % {"resp": response})
@@ -255,7 +255,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	# read serial, will return $FVRG:1 (activated) or $FVRG:0 (deactivated)
 	if master_mode == 'testing':
 		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
-		response = '$FVRG:1'
+		response = '$FVRG:0'
 	else:
 		response = str(ser.readline(readline_buffer))
 	print('relais_5 response: %(resp)s' % {"resp": response})
