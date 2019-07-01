@@ -417,10 +417,12 @@ while True:
 
 
 		# read the microwave generator
-		readMicrowave(ser, 'normal', readline_buffer)
 		if master_mode == 'operation':
+			readMicrowave(ser, 'normal', readline_buffer)
 			ser.flushInput()  #flush input buffer, discarding all its contents
 			ser.flushOutput() #flush output buffer, aborting current output and discard all that is in buffer
+		if master_mode == 'testing':
+			readMicrowave('TEST', 'normal', readline_buffer)
 	except KeyboardInterrupt:
 		print('Ctrl + C. Exiting. Flushing serial connection.')
 		if master_mode == 'operation':
