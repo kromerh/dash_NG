@@ -424,7 +424,7 @@ while True:
 		if master_mode == 'testing':
 			readMicrowave('TEST', 'normal', readline_buffer)
 
-			sys.exit()
+			# sys.exit()
 	except KeyboardInterrupt:
 		print('Ctrl + C. Exiting. Flushing serial connection.')
 		if master_mode == 'operation':
