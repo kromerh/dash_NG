@@ -4,7 +4,7 @@ import datetime
 import serial
 import sys
 import pandas as pd
-import sqlalchemy
+import sqlalchemy as sql
 import re
 
 master_mode = 'testing'
