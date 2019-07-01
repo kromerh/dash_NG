@@ -236,7 +236,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	print('temp1 response: %(resp)s' % {"resp": response})
 
 	t_ = re.findall(r':(\d+).*[^0-9](\d+)', response)
-
+	print(t_)
 	if (len(t_) > 1) & (cmd in response):
 		temp1 = t_[0]
 		temp2 = t_[1]
@@ -390,7 +390,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 			print('ERROR DLL_frequency, DLL_reflexion response: %(resp)s' % {"resp": response})
 
 	insertMicrowaveReadoutIntoTable(frequency_soll, power_soll, temp1, temp2, relais_5, relais_24, rf_status, power_out, power_reflected, DLL_frequency, DLL_reflexion, sql_engine)
-
+	print(frequency_soll, power_soll, temp1, temp2, relais_5, relais_24, rf_status, power_out, power_reflected, DLL_frequency, DLL_reflexion)
 
 while True:
 	try:
