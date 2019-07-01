@@ -424,7 +424,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 		else:
 			print('ERROR DLL_frequency, DLL_reflexion response: {response}')
 
-	insertMicrowaveReadoutIntoTable(frequency_soll, power_soll, temp1, temp2, relais_5, relais_24, rf_status, power_out, power_reflected, DLL_frequency, DLL_reflexion mysql_connection)
+	insertMicrowaveReadoutIntoTable(frequency_soll, power_soll, temp1, temp2, relais_5, relais_24, rf_status, power_out, power_reflected, DLL_frequency, DLL_reflexion, mysql_connection)
 
 
 while True:
