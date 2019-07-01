@@ -255,7 +255,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	# read serial, will return $FVRG:1 (activated) or $FVRG:0 (deactivated)
 	if master_mode == 'testing':
 		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
-		response = '$FVRG:0'
+		response = '$FVRG:ERROR'
 	else:
 		response = str(ser.readline(readline_buffer))
 	print('relais_5 response: %(resp)s' % {"resp": response})
