@@ -10,6 +10,7 @@ import re
 master_mode = 'testing'
 # master_mode = 'operation'
 
+readline_buffer = 500
 
 
 # *****************
@@ -102,7 +103,7 @@ def switchDLLstateInControlTable(mysql_connection):
 	cur.close()
 
 
-def sendCommandToMicrowave(command, ser, command_id, readline_buffer=500, mysql_connection):
+def sendCommandToMicrowave(command, ser, command_id, mysql_connection, readline_buffer=500):
 	"""
 	Takes one command and the serial connection to the microwave generator as input and sends command via serial to the microwave.
 	command: is the full command
@@ -447,11 +448,12 @@ while True:
 				cmd_id = str(row['id'])
 
 				# send the command, in there it also updates the time and sets executed to 1
-				sendCommandToMicrowave(cmd, ser, cmd_id, readline_buffer=500, mysql_connection)
+				# def sendCommandToMicrowave(command, ser, command_id, mysql_connection, readline_buffer=500)
+				sendCommandToMicrowave(cmd, ser, cmd_id, mysql_connection, readline_buffer)
 
 
 		# read the microwave generator
-		readMicrowave(ser, mode='normal', readline_buffer=500)
+		readMicrowave(ser, mode='normal', readline_buffer)
 		if master_mode == 'operation':
 			ser.flushInput()  #flush input buffer, discarding all its contents
 			ser.flushOutput() #flush output buffer, aborting current output and discard all that is in buffer
