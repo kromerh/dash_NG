@@ -1022,8 +1022,8 @@ base_layout = html.Div(
 				html.Div(id="flow-meter-readout-running-time"), # running readout of mass flow reading
 				html.Div(id="flow-meter-setpoint-value"), # setpoint hold value
 				html.Div(id='flow-meter-readout-values'), # Hidden div inside the app that stores the data from the live db
-				html.Div(id='microwave-state-relais-24'), # state of the relais 24
-				html.Div(id='microwave-state-relais-5'), # state of the relais 5
+				html.Div(id='microwave-temperature-values'), # Hidden div inside the app that stores the temperature data
+				html.Div(id='microwave-state-values'), # state of the relais 24, relais 5, and rf
 			],
 			style={"visibility": "hidden"},
 		),
@@ -1046,8 +1046,6 @@ base_layout = html.Div(
 ################################################################################################################################################
 # callbacks
 ################################################################################################################################################
-
-
 # ********************************
 # FLOW METER
 # ********************************
@@ -1131,17 +1129,13 @@ def flow_meter_setpoint_button(n_clicks, setpoint_value):
 	[State("flow-meter-readout-command-string", "children")]
 	)
 def retrieve_data(intervals, command_string):
-	# print(command_string)
+	print(state_dic)
 	if command_string == 'START':
-		 # some expensive clean data step
-		 df = readFlowMeterVoltage(sql_engine, 300)  # retrieve the past 60 seconds
-		 # print('Inside retrieve_data')
-		 # print(df)
-		 # more generally, this line would be
-		 # json.dumps(cleaned_df)
-		 state_dic['state'] = 'plotting'
 
-		 return df.to_json(date_format='iso', orient='split')
+		df = readFlowMeterVoltage(sql_engine, 300)  # retrieve the past 60 seconds
+		state_dic['state'] = 'plotting'
+
+		return df.to_json(date_format='iso', orient='split')
 	else:
 		 state_dic['state'] = 'not plotting'
 
@@ -1158,11 +1152,6 @@ def flow_meter_text_area(intervals,
 	command_string,
 	json_data
 	):
-
-	# if command_string == 'START':
-	# 	startFlowMeterReadout()
-	# if command_string == 'STOP':
-	# 	stopAllPython()
 	if state_dic['state'] == "plotting":
 		# print("plotting")
 		df = pd.read_json(json_data, orient='split')
@@ -1247,12 +1236,91 @@ def plot_graph_data(json_data):
 # MICROWAVE
 # ********************************
 
-# Color 24V relais red or green depending on its state
+
+
+# STAUTS CONTROL: Coloring the LEDs
+
+
+# Read the states from the database
 @app.callback(
-	Output("microwave-state-relais-24", "children"),
-	[Input("readout-interval", "intervals")]
+	Output("microwave-state-values", "children"),
+	[Input("readout-interval", "n_intervals")]
 )
-def microwave_color_relais_24(intervals, sql_engine):
+def microwave_set_state_relais_24(n_intervals):
 	# call the function to read the state df
 	df = getState(sql_engine)
-	print(df)
+
+	return df
+
+# Color 24V relais red or green depending on its state
+@app.callback(
+	Output("microwave-24V-indicator", "color"),
+	[Input("microwave-state-values", "children")]
+)
+def microwave_color_relais_24(df):
+	# check if the last entries in the relais 24 column are majority 1, then return 1 for green otherwise 0 for red
+	vals = df['relais_24'].value_counts()
+	if vals[1] > vals[0]:
+		return "green"
+	else:
+		return "red"
+
+
+# Color 5V relais red or green depending on its state
+@app.callback(
+	Output("microwave-5V-indicator", "color"),
+	[Input("microwave-state-values", "children")]
+)
+def microwave_color_relais_5(df):
+	# check if the last entries in the relais 5 column are majority 1, then return 1 for green otherwise 0 for red
+	vals = df['relais_5'].value_counts()
+	if vals[1] > vals[0]:
+		return "green"
+	else:
+		return "red"
+
+# Color rf relais red or green depending on its state
+@app.callback(
+	Output("microwave-RF-indicator", "color"),
+	[Input("microwave-state-values", "children")]
+)
+def microwave_color_relais_rf(df):
+	# check if the last entries in the relais 5 column are majority 1, then return 1 for green otherwise 0 for red
+	vals = df['rf_status'].value_counts()
+	if vals[1] > vals[0]:
+		return "green"
+	else:
+		return "red"
+
+
+
+
+# # Color temperature red or green depending on its state
+# @app.callback(
+# 	Output("microwave-state-temperature", "children"),
+# 	[Input("readout-interval", "n_intervals")]
+# )
+# def microwave_set_state_relais_5(n_intervals):
+# 	# call the function to read the state df
+# 	df = getState(sql_engine)
+
+# 	# check if the last entries in the relais 24 column are majority 1, then return 1 for green otherwise 0 for red
+# 	vals = df['relais_5'].value_counts()
+# 	if vals[1] > vals[0]:
+# 		return 1 # green
+# 	else:
+# 		return 0 # red
+
+# # Color 5V relais red or green depending on its state
+# @app.callback(
+# 	Output("microwave-5V-indicator", "color"),
+# 	[Input("microwave-state-relais-5", "children")]
+# )
+# def microwave_color_relais_5(state_relais_5):
+# 	if state_relais_5 == 1:
+# 		return "green"
+# 	else:
+# 		return "red"
+
+
+
