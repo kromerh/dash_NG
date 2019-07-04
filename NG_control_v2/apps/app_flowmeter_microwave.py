@@ -1455,3 +1455,154 @@ def plot_tempperature_graph_data(json_data):
 			hovermode='closest'
 		)
 	}
+
+
+# Reflected Power Graph
+@app.callback(
+	Output("microwave-reflected-power-graph", "figure"),
+	[Input("microwave-reflected-power-values", "children")]
+)
+def plot_reflected_power_graph_data(json_data):
+
+	traces = []
+
+	try:
+		df = pd.read_json(json_data, orient='split')
+
+		traces.append(
+			go.Scatter(
+				x=df['time'],
+				y=df['power_out'],
+				line=go.scatter.Line(
+					color='#42C4F7',
+					# width=2.0
+				),
+				text='Power out [W]',
+				# mode='markers',
+				mode='lines+markers',
+				opacity=1,
+
+				name='Power out [W]'
+			)
+		)
+		traces.append(
+			go.Scatter(
+				x=df['time'],
+				y=df['power_reflected'],
+				line=go.scatter.Line(
+					color='#e542f7',
+					# width=2.0
+				),
+				text='Power reflected [W]',
+				# mode='markers',
+				mode='lines+markers',
+				opacity=1,
+
+				name='Power reflected [W]'
+			)
+		)
+
+	except:
+		traces.append(go.Scatter(
+			x=[],
+			y=[],
+			line=go.scatter.Line(
+				color='#42C4F7',
+				width=1.0
+			),
+			text='Power [W]',
+			# mode='markers',
+			opacity=1,
+			marker={
+				 'size': 15,
+				 'line': {'width': 1, 'color': '#42C4F7'}
+			},
+			mode='lines',
+			name='Frequency [MHz]'
+		))
+
+	return {
+		'data': traces,
+		'layout': go.Layout(
+			xaxis={'title': 'Time'},
+			yaxis={'title': 'Power [W]'},
+			margin={'l': 100, 'b': 100, 't': 10, 'r': 10},
+			legend={'x': 0, 'y': 1},
+			hovermode='closest'
+		)
+	}
+
+# DLL Graph
+@app.callback(
+	Output("microwave-DLL-graph", "figure"),
+	[Input("microwave-DLL-values", "children")]
+)
+def plot_DLL_graph_data(json_data):
+
+	traces = []
+
+	try:
+		df = pd.read_json(json_data, orient='split')
+
+		traces.append(
+			go.Scatter(
+				x=df['time'],
+				y=df['DLL_frequency'],
+				line=go.scatter.Line(
+					color='#42C4F7',
+					# width=2.0
+				),
+				text='DLL frequency [MHz]',
+				# mode='markers',
+				mode='lines+markers',
+				opacity=1,
+
+				name='DLL frequency [MHz]'
+			)
+		)
+		traces.append(
+			go.Scatter(
+				x=df['time'],
+				y=df['DLL_reflexion'],
+				line=go.scatter.Line(
+					color='#e542f7',
+					# width=2.0
+				),
+				text='DLL reflexion [dB]',
+				# mode='markers',
+				mode='lines+markers',
+				opacity=1,
+
+				name='DLL reflexion [dB]'
+			)
+		)
+
+	except:
+		traces.append(go.Scatter(
+			x=[],
+			y=[],
+			line=go.scatter.Line(
+				color='#42C4F7',
+				width=1.0
+			),
+			text='Power [W]',
+			# mode='markers',
+			opacity=1,
+			marker={
+				 'size': 15,
+				 'line': {'width': 1, 'color': '#42C4F7'}
+			},
+			mode='lines',
+			name='Frequency [MHz]'
+		))
+
+	return {
+		'data': traces,
+		'layout': go.Layout(
+			xaxis={'title': 'Time'},
+			yaxis={'title': 'Y'},
+			margin={'l': 100, 'b': 100, 't': 10, 'r': 10},
+			legend={'x': 0, 'y': 1},
+			hovermode='closest'
+		)
+	}

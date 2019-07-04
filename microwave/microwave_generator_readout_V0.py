@@ -260,7 +260,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	# read serial, will return $FVRG:1 (activated) or $FVRG:0 (deactivated)
 	if master_mode == 'testing':
 		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
-		response = '$FVRG:0'
+		response = '$FVRG:1'
 	else:
 		response = str(ser.readline(readline_buffer))
 	print('relais_5 response: %(resp)s' % {"resp": response})
@@ -286,7 +286,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	# read serial, will return $PLRG:1 (activated) or $PLRG:0 (deactivated)
 	if master_mode == 'testing':
 		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
-		response = '$PLRG:0'
+		response = '$PLRG:1'
 	else:
 		response = str(ser.readline(readline_buffer))
 	print('relais_24 response: %(resp)s' % {"resp": response})
@@ -341,7 +341,10 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	# read serial, will return $FRPG:120.0W,24.2W
 	if master_mode == 'testing':
 		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
-		response = '$FRPG:120.0W,24.2W'
+		rand1 = random.uniform(0, 1)*200
+		rand2 = random.uniform(0, 1)*30
+		response = '$FRPG:%(val1)sW,%(val2)sW' % {"val1": rand1, "val2": rand2}
+		# response = '$FRPG:120.0W,24.2W'
 	else:
 		response = str(ser.readline(readline_buffer))
 	print('power_out, power_reflected response: %(resp)s' % {"resp": response})
@@ -375,7 +378,10 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 		# read serial, will return DLL_frequency, DLL_reflexion $DLE,2449,-2.18dB
 		if master_mode == 'testing':
 			print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
-			response = '$DLE,2449,-2.18dB'
+			rand1 = random.uniform(0, 1)*2450
+			rand2 = random.uniform(0, 1)*10
+			response = '$DLE,%(val1)s,-%(val2)sdB' % {"val1": rand1, "val2": rand2}
+			# response = '$DLE,2449,-2.18dB'
 		else:
 			response = str(ser.readline(readline_buffer))
 		print('DLL_frequency, DLL_reflexion response: %(resp)s' % {"resp": response})
