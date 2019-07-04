@@ -4,7 +4,6 @@ import datetime
 import serial
 import sys
 import pandas as pd
-import numpy as np
 import sqlalchemy as sql
 import re
 import random
@@ -205,7 +204,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	if master_mode == 'testing':
 		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
 		rand = random.uniform(0, 1)
-		response = '$PWRG:%(val1)s.%(val2)sW' % {"val1": rand*500, "val2": int(np.rint(rand*10))}
+		response = '$PWRG:%(val1)sW' % {"val1": rand*500}
 	else:
 		response = str(ser.readline(readline_buffer))
 	t_ = re.findall(r':(.+)W', response)
