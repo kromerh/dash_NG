@@ -229,8 +229,8 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	# read serial, will return $TMPG:19oC,20oC
 	if master_mode == 'testing':
 		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
-		rand1 = random.uniform(0, 1)*30
-		rand2 = random.uniform(0, 1)*30
+		rand1 = int(random.uniform(0, 1)*30)
+		rand2 = int(random.uniform(0, 1)*30)
 		response = '$TMPG:%(val1)soC,%(val2)soC' % {"val1": rand1, "val2": rand2}
 	else:
 		response = str(ser.readline(readline_buffer))
