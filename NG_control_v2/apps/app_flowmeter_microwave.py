@@ -99,6 +99,16 @@ def getReflectedPower(sql_engine):
 	# columns: time (timestamp), power (float), id (primary key)
 	return df
 
+def getDLL(sql_engine):
+	"""
+	Reads the last 300 entries of the power and returns it in a dataframe
+	"""
+	query = "SELECT * FROM microwave_generator_DLL ORDER BY id DESC LIMIT 300"
+	df = pd.read_sql(query, sql_engine)
+
+	# columns: time (timestamp), power (float), id (primary key)
+	return df
+
 def getTemperature(sql_engine):
 	"""
 	Reads the last 300 entries of the two temperatures and returns it in a dataframe
@@ -753,103 +763,6 @@ base_layout = html.Div(
 									],
 									className='row'
 								),
-								html.Div(
-									[
-										dcc.Graph(
-											id="position-gauge",
-											className="six columns",
-											style={
-												"marginLeft": "20%",
-												"display": "flex",
-												"justify-content": "right",
-												"align-items": "right",
-											},
-										)
-									],
-									className="row",
-									style={
-										"border-radius": "1px",
-										"border-width": "5px",
-										"border-top": "1px solid rgb(216, 216, 216)",
-										"marginBottom": "4%",
-									},
-								),
-								html.P("Velocity Mode", style={"textAlign": "center"}),
-								html.Div(
-									[
-										html.Div(
-											[
-												html.Div(
-													[
-														html.Div(
-															id="rotate-graph",
-															style={
-																"transform": "rotate(50deg)"
-															},
-															children=[
-																html.H2(
-																	"|",
-																	style={
-																		"width": "10px",
-																		"height": "10px",
-																		"background-color": "yellow",
-																	},
-																)
-															],
-														)
-													],
-													style={
-														"width": "10px",
-														"height": "10px",
-													},
-												)
-											],
-											style={
-												"paddingLeft": "48%",
-												"paddingTop": "25%",
-												"paddingBottom": "45%",
-												"border-radius": "5px",
-											},
-										)
-									],
-									style={
-										"border-width": "5px",
-										"border": "1px solid rgb(216, 216, 216)",
-										"border-radius": "5px",
-										"width": "29%",
-										"height": "10%",
-										# "marginLeft": "34%",
-										"marginLeft": "3%",
-										"marginBottom": "6%",
-									},
-								),
-								html.Div(
-									[
-										daq.Gauge(
-											id="speed-gauge",
-											showCurrentValue=True,
-											units="Revolutions/Second",
-											min=0,
-											max=3,
-											value=0,
-											size=150,
-											color="#FF5E5E",
-											label="Revolutions Per Second (Max 3 RPS)",
-											className="twelve columns",
-											style={
-												"marginTop": "5%",
-												"marginBottom": "-10%",
-												"color": "#222",
-											},
-										)
-									],
-									className="row",
-									style={
-										"border-radius": "1px",
-										"border-width": "5px",
-										"border-top": "1px solid rgb(216, 216, 216)",
-									},
-								),
 							],
 							style={
 								"border-radius": "5px",
@@ -1171,7 +1084,7 @@ def microwave_read_reflected_power(n_intervals):
 )
 def microwave_read_DLL(n_intervals):
 	# call the function to read the state df
-	df = getReflectedPower(sql_engine)
+	df = getDLL(sql_engine)
 
 	return df.to_json(date_format='iso', orient='split')
 
@@ -1595,6 +1508,7 @@ def plot_DLL_graph_data(json_data):
 					color='#e542f7',
 					# width=2.0
 				),
+				yaxis='y2',
 				text='DLL reflexion [dB]',
 				# mode='markers',
 				mode='lines+markers',
@@ -1627,7 +1541,8 @@ def plot_DLL_graph_data(json_data):
 		'data': traces,
 		'layout': go.Layout(
 			xaxis={'title': 'Time'},
-			yaxis={'title': 'Y'},
+			yaxis={'title': 'Frequency'},
+			yaxis2 = dict(title= 'Reflexion [dB]', overlaying='y', side='right'),
 			margin={'l': 100, 'b': 100, 't': 10, 'r': 10},
 			legend={'x': 0, 'y': 1},
 			hovermode='closest'
