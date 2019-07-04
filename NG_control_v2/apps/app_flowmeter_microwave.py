@@ -1036,7 +1036,7 @@ def flow_meter_text_area(intervals,
 # def plot_graph_data(df, figure, command, start, start_button, PID):
 def plot_graph_data(json_data):
 
-	print(state_dic)
+	# print(state_dic)
 	traces = []
 
 	try:
