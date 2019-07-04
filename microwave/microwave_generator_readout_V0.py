@@ -378,7 +378,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 		# read serial, will return DLL_frequency, DLL_reflexion $DLE,2449,-2.18dB
 		if master_mode == 'testing':
 			print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
-			rand1 = random.uniform(0, 1)*2450
+			rand1 = int(random.uniform(0, 1)*2450)
 			rand2 = random.uniform(0, 1)*10
 			response = '$DLE,%(val1)s,-%(val2)sdB' % {"val1": rand1, "val2": rand2}
 			# response = '$DLE,2449,-2.18dB'

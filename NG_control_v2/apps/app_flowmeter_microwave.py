@@ -1124,7 +1124,7 @@ def microwave_read_remperature(n_intervals):
 
 # power
 
-# Read the states from the database
+# Read the power from the database
 @app.callback(
 	Output("microwave-power-values", "children"),
 	[Input("microwave-readout-interval", "n_intervals")]
@@ -1137,7 +1137,7 @@ def microwave_read_power(n_intervals):
 
 # frequency
 
-# Read the states from the database
+# Read the frequency from the database
 @app.callback(
 	Output("microwave-frequency-values", "children"),
 	[Input("microwave-readout-interval", "n_intervals")]
@@ -1145,6 +1145,33 @@ def microwave_read_power(n_intervals):
 def microwave_read_frequency(n_intervals):
 	# call the function to read the state df
 	df = getFrequency(sql_engine)
+
+	return df.to_json(date_format='iso', orient='split')
+
+
+# Reflected power
+
+# Read the reflected power from the database
+@app.callback(
+	Output("microwave-reflected-power-values", "children"),
+	[Input("microwave-readout-interval", "n_intervals")]
+)
+def microwave_read_reflected_power(n_intervals):
+	# call the function to read the state df
+	df = getReflectedPower(sql_engine)
+
+	return df.to_json(date_format='iso', orient='split')
+
+
+# DLL
+# Read the DLL from the database
+@app.callback(
+	Output("microwave-DLL-values", "children"),
+	[Input("microwave-readout-interval", "n_intervals")]
+)
+def microwave_read_DLL(n_intervals):
+	# call the function to read the state df
+	df = getReflectedPower(sql_engine)
 
 	return df.to_json(date_format='iso', orient='split')
 
