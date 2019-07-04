@@ -866,8 +866,8 @@ base_layout = html.Div(
 		# Placeholder Divs
 		html.Div(
 			[
-				dcc.Interval(id="readout-interval", interval=1000, n_intervals=0),
-				dcc.Interval(id="microwave-readout-interval", interval=2000, n_intervals=0),
+				dcc.Interval(id="readout-interval", interval=2000, n_intervals=0),
+				dcc.Interval(id="microwave-readout-interval", interval=3000, n_intervals=0),
 				html.Div(id="flow-meter-readout-start-time"), # start time of mass flow reading from database
 				html.Div(id="flow-meter-readout-stop-time"), # stop time of mass flow reading from database
 				html.Div(id="flow-meter-readout-command-string"), # start and stop readout of mass flow reading
