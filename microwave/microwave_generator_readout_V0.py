@@ -231,7 +231,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
 		rand1 = random.uniform(0, 1)
 		rand2 = random.uniform(0, 1)
-		response = '$TMPG:%(val1)soC,%(val2)soC' % {"val1": rand*30, "val2": rand*30}
+		response = '$TMPG:%(val1)soC,%(val2)soC' % {"val1": rand1*30, "val2": rand2*30}
 	else:
 		response = str(ser.readline(readline_buffer))
 	print('temp1 response: %(resp)s' % {"resp": response})
