@@ -89,6 +89,16 @@ def getPower(sql_engine):
 	# columns: time (timestamp), power (float), id (primary key)
 	return df
 
+def getReflectedPower(sql_engine):
+	"""
+	Reads the last 300 entries of the power and returns it in a dataframe
+	"""
+	query = "SELECT * FROM microwave_generator_reflected_power ORDER BY id DESC LIMIT 300"
+	df = pd.read_sql(query, sql_engine)
+
+	# columns: time (timestamp), power (float), id (primary key)
+	return df
+
 def getTemperature(sql_engine):
 	"""
 	Reads the last 300 entries of the two temperatures and returns it in a dataframe
@@ -675,211 +685,33 @@ base_layout = html.Div(
 						),
 						html.Div(
 							[
-								dcc.Input(
-									id="acceleration-set",
-									placeholder="Acceleration",
-									type="text",
-									value="",
-									className="six columns",
+								dcc.Graph(
+									id="microwave-reflected-power-graph", #
+
 									style={
-										"width": "35%",
-										"marginLeft": "13.87%",
-										"marginTop": "3%",
-									},
-								),
-								dcc.Input(
-									id="address-set",
-									placeholder="Address",
-									type="text",
-									value="",
-									className="six columns",
-									maxlength="1",
-									style={"width": "35%", "marginTop": "3%"},
+										"height": "254px",
+										"marginLeft":"0%",
+										"marginTop":"0%"
+										},
 								),
 							],
-							className="row",
+							className='row'
 						),
 						html.Div(
 							[
-								dcc.Input(
-									id="baudrate",
-									placeholder="Baudrate",
-									type="text",
-									value="",
-									className="six columns",
+								dcc.Graph(
+									id="microwave-DLL-graph", # t1 and t2
+
 									style={
-										"width": "35%",
-										"marginLeft": "13.87%",
-										"marginTop": "3%",
-									},
-								),
-								dcc.Input(
-									id="com-port",
-									placeholder="Port",
-									type="text",
-									value="",
-									className="six columns",
-									style={"width": "35%", "marginTop": "3%"},
+										"height": "254px",
+										"marginLeft":"0%",
+										"marginTop":"0%"
+										},
 								),
 							],
-							className="row",
+							className='row'
 						),
-						html.H5(
-							"Motor Current",
-							style={
-								"textAlign": "Center",
-								"paddingTop": "2.5%",
-								"marginBottom": "12%",
-								"marginTop": "5%",
-							},
-						),
-						html.Div(
-							[
-								daq.Slider(
-									id="motor-current",
-									value=30,
-									color="default",
-									min=0,
-									max=100,
-									size=250,
-									step=None,
-									handleLabel={
-										"showCurrentValue": "True",
-										"label": "VALUE",
-									},
-									marks={
-										"0": "0",
-										"10": "",
-										"20": "",
-										"30": "",
-										"40": "",
-										"50": "50",
-										"60": "",
-										"70": "",
-										"80": "",
-										"90": "",
-										"100": "100",
-									},
-									targets={
-										"80": {
-											"showCurrentValue": "False",
-											"label": "WARNING",
-											"color": "#EA0606",
-										},
-										"100": "",
-									},
-								)
-							],
-							style={
-								"display": "flex",
-								"justify-content": "center",
-								"align-items": "center",
-								"marginBottom": "12%",
-							},
-						),
-						html.H5(
-							"Hold Current",
-							style={"textAlign": "center", "marginBottom": "12%"},
-						),
-						html.Div(
-							[
-								daq.Slider(
-									id="hold-current",
-									color="default",
-									value=20,
-									min=0,
-									max=100,
-									size=250,
-									step=None,
-									handleLabel={
-										"showCurrentValue": "True",
-										"label": "VALUE",
-									},
-									marks={
-										"0": "0",
-										"10": "",
-										"20": "",
-										"30": "",
-										"40": "",
-										"50": "50",
-										"60": "",
-										"70": "",
-										"80": "",
-										"90": "",
-										"100": "100",
-									},
-									targets={
-										"80": {
-											"showCurrentValue": "False",
-											"label": "WARNING",
-											"color": "#EA0606",
-										},
-										"100": "",
-									},
-								)
-							],
-							style={
-								"display": "flex",
-								"justify-content": "center",
-								"align-items": "center",
-								"marginBottom": "12%",
-							},
-						),
-						html.H5(
-							"Step Size",
-							style={"textAlign": "Center", "marginBottom": "12%"},
-						),
-						html.Div(
-							[
-								daq.Slider(
-									id="step-size",
-									value=64,
-									color="default",
-									min=1,
-									max=256,
-									size=250,
-									step=None,
-									handleLabel={
-										"showCurrentValue": "True",
-										"label": "VALUE",
-									},
-									marks={
-										"1": "1",
-										"2": "",
-										"4": "",
-										"8": "",
-										"16": "",
-										"32": "",
-										"64": "",
-										"128": "128",
-										"256": "256",
-									},
-								)
-							],
-							style={
-								"display": "flex",
-								"justify-content": "center",
-								"align-items": "center",
-								"marginBottom": "12%",
-							},
-						),
-						html.Div(
-							[
-								daq.ColorPicker(
-									id="color-picker",
-									label="Color Picker",
-									value=dict(hex="#119DFF"),
-									size=150,
-								)
-							],
-							style={
-								"border-radius": "1px",
-								"border-width": "5px",
-								"border-top": "1px solid rgb(216, 216, 216)",
-								"paddingTop": "5%",
-								"paddingBottom": "5%",
-							},
-						),
+
 					],
 					className="four columns",
 					style={
@@ -1035,6 +867,7 @@ base_layout = html.Div(
 		html.Div(
 			[
 				dcc.Interval(id="readout-interval", interval=1000, n_intervals=0),
+				dcc.Interval(id="microwave-readout-interval", interval=2000, n_intervals=0),
 				html.Div(id="flow-meter-readout-start-time"), # start time of mass flow reading from database
 				html.Div(id="flow-meter-readout-stop-time"), # stop time of mass flow reading from database
 				html.Div(id="flow-meter-readout-command-string"), # start and stop readout of mass flow reading
@@ -1044,6 +877,8 @@ base_layout = html.Div(
 				html.Div(id='microwave-temperature-values'), # Hidden div inside the app that stores the temperature data
 				html.Div(id='microwave-state-values'), # Hidden div inside the app that stores the state data
 				html.Div(id='microwave-power-values'), # Hidden div inside the app that stores the power data
+				html.Div(id='microwave-reflected-power-values'), # Hidden div inside the app that stores the reflected power data
+				html.Div(id='microwave-DLL-values'), # Hidden div inside the app that stores the DLL data
 				html.Div(id='microwave-frequency-values'), # Hidden div inside the app that stores the frequency data
 			],
 			style={"visibility": "hidden"},
@@ -1150,7 +985,7 @@ def flow_meter_setpoint_button(n_clicks, setpoint_value):
 	[State("flow-meter-readout-command-string", "children")]
 	)
 def retrieve_data(intervals, command_string):
-	print(state_dic)
+	# print(state_dic)
 	if command_string == 'START':
 
 		df = readFlowMeterVoltage(sql_engine, 300)  # retrieve the past 60 seconds
@@ -1266,7 +1101,7 @@ def plot_graph_data(json_data):
 # Read the states from the database
 @app.callback(
 	Output("microwave-state-values", "children"),
-	[Input("readout-interval", "n_intervals")]
+	[Input("microwave-readout-interval", "n_intervals")]
 )
 def microwave_read_state(n_intervals):
 	# call the function to read the state df
@@ -1279,7 +1114,7 @@ def microwave_read_state(n_intervals):
 # Read the states from the database
 @app.callback(
 	Output("microwave-temperature-values", "children"),
-	[Input("readout-interval", "n_intervals")]
+	[Input("microwave-readout-interval", "n_intervals")]
 )
 def microwave_read_remperature(n_intervals):
 	# call the function to read the state df
@@ -1292,7 +1127,7 @@ def microwave_read_remperature(n_intervals):
 # Read the states from the database
 @app.callback(
 	Output("microwave-power-values", "children"),
-	[Input("readout-interval", "n_intervals")]
+	[Input("microwave-readout-interval", "n_intervals")]
 )
 def microwave_read_power(n_intervals):
 	# call the function to read the state df
@@ -1305,7 +1140,7 @@ def microwave_read_power(n_intervals):
 # Read the states from the database
 @app.callback(
 	Output("microwave-frequency-values", "children"),
-	[Input("readout-interval", "n_intervals")]
+	[Input("microwave-readout-interval", "n_intervals")]
 )
 def microwave_read_frequency(n_intervals):
 	# call the function to read the state df
