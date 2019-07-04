@@ -6,6 +6,7 @@ import sys
 import pandas as pd
 import sqlalchemy as sql
 import re
+import random
 
 master_mode = 'testing'
 # master_mode = 'operation'
@@ -173,7 +174,8 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	# read serial, will return $FRQG:2450MHz
 	if master_mode == 'testing':
 		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
-		response = '$FRQG:2450MHz'
+		rand = random.uniform(0, 1) * 2450
+		response = '$FRQG:%(val)sMHz' % {"val": rand}
 	else:
 		response = str(ser.readline(readline_buffer))
 	t_ = re.findall(r':(\d+)', response)
@@ -201,7 +203,8 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	# read serial, will return $PWRG:250.2W
 	if master_mode == 'testing':
 		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
-		response = '$PWRG:250.1W'
+		rand = random.uniform(0, 1)
+		response = '$PWRG:%(val1)s.%(val2)sW' % {"val1": rand*500, "val2": rand}
 	else:
 		response = str(ser.readline(readline_buffer))
 	t_ = re.findall(r':(.+)W', response)
@@ -226,7 +229,9 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 	# read serial, will return $TMPG:19oC,20oC
 	if master_mode == 'testing':
 		print('Testing inside readMicrowave: str(ser.readline(readline_buffer)) cmd=' + cmd)
-		response = '$TMPG:5oC,20oC'
+		rand1 = random.uniform(0, 1)
+		rand2 = random.uniform(0, 1)
+		response = '$TMPG:%(val1)soC,%(val2)soC' % {"val1": rand*30, "val2": rand*30}
 	else:
 		response = str(ser.readline(readline_buffer))
 	print('temp1 response: %(resp)s' % {"resp": response})

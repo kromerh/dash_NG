@@ -1315,7 +1315,7 @@ def microwave_read_frequency(n_intervals):
 
 
 
-# STAUTUS CONTROL: Coloring the LEDs
+# STATUS CONTROL: Coloring the LEDs
 
 
 # Color 24V relais red or green depending on its state
@@ -1372,3 +1372,251 @@ def microwave_color_temperature_indicator(json_data):
 		return "red"
 
 
+# POWER, FREQUENCY, TEMPERATURE indicators
+
+# Display power
+@app.callback(
+	Output("microwave-power-display", "value"),
+	[Input("microwave-power-values", "children")]
+)
+def microwave_display_power(json_data):
+	df = pd.read_json(json_data, orient='split')
+	# take the mean of the last 10 entries
+	vals = df['power'].values[0:11]
+
+	return np.rint(np.mean(vals))
+
+# Display frequency
+@app.callback(
+	Output("microwave-frequency-display", "value"),
+	[Input("microwave-frequency-values", "children")]
+)
+def microwave_display_frequency(json_data):
+	df = pd.read_json(json_data, orient='split')
+	# take the mean of the last 10 entries
+	vals = df['frequency'].values[0:11]
+
+	return np.rint(np.mean(vals))
+
+# Display temperature1
+@app.callback(
+	Output("microwave-temperature1-display", "value"),
+	[Input("microwave-temperature-values", "children")]
+)
+def microwave_display_temperature1(json_data):
+	df = pd.read_json(json_data, orient='split')
+	# take the mean of the last 10 entries
+	vals = df['temperature1'].values[0:11]
+
+	return np.rint(np.mean(vals))
+
+# Display temperature2
+@app.callback(
+	Output("microwave-temperature2-display", "value"),
+	[Input("microwave-temperature-values", "children")]
+)
+def microwave_display_temperature2(json_data):
+	df = pd.read_json(json_data, orient='split')
+	# take the mean of the last 10 entries
+	vals = df['temperature2'].values[0:11]
+
+	return np.rint(np.mean(vals))
+
+
+
+# GRAPHS
+
+
+# Power Graph
+@app.callback(
+	Output("microwave-power-graph", "figure"),
+	[Input("microwave-power-values", "children")]
+)
+# def plot_graph_data(df, figure, command, start, start_button, PID):
+def plot_power_graph_data(json_data):
+
+	traces = []
+
+	try:
+		df = pd.read_json(json_data, orient='split')
+
+		# print(df.iloc[0,:])
+		traces.append(go.Scatter(
+			x=df['time'],
+			y=df['power'],
+			line=go.scatter.Line(
+				color='#42C4F7',
+				# width=2.0
+			),
+			text='Power [W]',
+			# mode='markers',
+			mode='lines+markers',
+			opacity=1,
+
+			name='Power [W]'
+		))
+
+	except:
+		traces.append(go.Scatter(
+			x=[],
+			y=[],
+			line=go.scatter.Line(
+				color='#42C4F7',
+				width=1.0
+			),
+			text='Power [W]',
+			# mode='markers',
+			opacity=1,
+			marker={
+				 'size': 15,
+				 'line': {'width': 1, 'color': '#42C4F7'}
+			},
+			mode='lines',
+			name='Power [W]'
+		))
+
+	return {
+		'data': traces,
+		'layout': go.Layout(
+			xaxis={'title': 'Time'},
+			yaxis={'title': 'Power [W]'},
+			margin={'l': 100, 'b': 100, 't': 10, 'r': 10},
+			legend={'x': 0, 'y': 1},
+			hovermode='closest'
+		)
+	}
+
+
+# Frequency Graph
+@app.callback(
+	Output("microwave-frequency-graph", "figure"),
+	[Input("microwave-frequency-values", "children")]
+)
+def plot_frequency_graph_data(json_data):
+
+	traces = []
+
+	try:
+		df = pd.read_json(json_data, orient='split')
+
+		# print(df.iloc[0,:])
+		traces.append(go.Scatter(
+			x=df['time'],
+			y=df['frequency'],
+			line=go.scatter.Line(
+				color='#42C4F7',
+				# width=2.0
+			),
+			text='Frequency [MHz]',
+			# mode='markers',
+			mode='lines+markers',
+			opacity=1,
+
+			name='Frequency [MHz]'
+		))
+
+	except:
+		traces.append(go.Scatter(
+			x=[],
+			y=[],
+			line=go.scatter.Line(
+				color='#42C4F7',
+				width=1.0
+			),
+			text='Frequency [MHz]',
+			# mode='markers',
+			opacity=1,
+			marker={
+				 'size': 15,
+				 'line': {'width': 1, 'color': '#42C4F7'}
+			},
+			mode='lines',
+			name='Frequency [MHz]'
+		))
+
+	return {
+		'data': traces,
+		'layout': go.Layout(
+			xaxis={'title': 'Time'},
+			yaxis={'title': 'Frequency [MHz]'},
+			margin={'l': 100, 'b': 100, 't': 10, 'r': 10},
+			legend={'x': 0, 'y': 1},
+			hovermode='closest'
+		)
+	}
+
+
+# Temperature Graph
+@app.callback(
+	Output("microwave-temperature-graph", "figure"),
+	[Input("microwave-temperature-values", "children")]
+)
+def plot_tempperature_graph_data(json_data):
+
+	traces = []
+
+	try:
+		df = pd.read_json(json_data, orient='split')
+
+		traces.append(
+			go.Scatter(
+				x=df['time'],
+				y=df['temperature1'],
+				line=go.scatter.Line(
+					color='#42C4F7',
+					# width=2.0
+				),
+				text='Temperature 1 [degC]',
+				# mode='markers',
+				mode='lines+markers',
+				opacity=1,
+
+				name='Temperature 1 [degC]'
+			)
+		)
+		traces.append(
+			go.Scatter(
+				x=df['time'],
+				y=df['temperature2'],
+				line=go.scatter.Line(
+					color='#e542f7',
+					# width=2.0
+				),
+				text='Temperature 2 [degC]',
+				# mode='markers',
+				mode='lines+markers',
+				opacity=1,
+
+				name='Temperature 2 [degC]'
+			)
+		)
+
+	except:
+		traces.append(go.Scatter(
+			x=[],
+			y=[],
+			line=go.scatter.Line(
+				color='#42C4F7',
+				width=1.0
+			),
+			text='Frequency [MHz]',
+			# mode='markers',
+			opacity=1,
+			marker={
+				 'size': 15,
+				 'line': {'width': 1, 'color': '#42C4F7'}
+			},
+			mode='lines',
+			name='Frequency [MHz]'
+		))
+
+	return {
+		'data': traces,
+		'layout': go.Layout(
+			xaxis={'title': 'Time'},
+			yaxis={'title': 'Temperature [degC]'},
+			margin={'l': 100, 'b': 100, 't': 10, 'r': 10},
+			legend={'x': 0, 'y': 1},
+			hovermode='closest'
+		)
+	}
