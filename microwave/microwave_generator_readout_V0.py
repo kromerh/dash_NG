@@ -349,7 +349,7 @@ def readMicrowave(ser, mode='normal', readline_buffer=500):
 		response = str(ser.readline(readline_buffer))
 	print('power_out, power_reflected response: %(resp)s' % {"resp": response})
 
-	t_ = re.findall(r':(\d+\.\d)W,(\d+\.\d)W', response)
+	t_ = re.findall(r':(\d+\.\d*)W,(\d+\.\d*)W', response)
 
 	if (len(t_) > 0) & (cmd in response):
 		power_out = t_[0][0]
