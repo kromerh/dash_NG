@@ -7,29 +7,36 @@ import numpy as np
 import pandas as pd
 import datetime, time
 import pymysql
-import sqlalchemy as sql
 
 from app import app
-user = 'doseReader'
-pw = 'heiko'
-
-host="twofast-rpi3-0"  # your host
-user=user # username
-passwd=pw  # password
-db="NG_twofast_DB" # name of the database
-connect_string = 'mysql+pymysql://%(user)s:%(pw)s@%(host)s:3306/%(db)s'% {"user": user, "pw": pw, "host": host, "db": db}
-sql_engine = sql.create_engine(connect_string)
-
-def retrieveLiveData(sql_engine, pastSeconds=7200):  # read past 2hrs by default
-    query = """SELECT * FROM HBox_Uno ORDER BY id DESC LIMIT {}""".format(pastSeconds)
-    df_dose = pd.read_sql(query, sql_engine)
-    df_dose['dose'] = df_dose['dose_voltage'] * 3000 / 5.5  # conversion factors according to current output signal muSv/hr
-    df_dose['date'] = df_dose['time']
-
-    df_dose = df_dose[['date', 'dose', 'HV_current', 'HV_voltage']]
-    return df_dose
 
 
+def retrieveLiveData(pastSeconds=7200):  # read past 2hrs by default
+	db = pymysql.connect(host="twofast-RPi3-0",  # your host
+						 user="doseReader",  # username
+						 passwd="heiko",  # password
+						 db="NG_twofast_DB")  # name of the database
+	# Create a Cursor object to execute queries.
+	cur = db.cursor()
+
+	try:
+		# DOSE
+		cur.execute("""SELECT * FROM HBox_Uno ORDER BY id DESC LIMIT {}""".format(pastSeconds))
+		rows = cur.fetchall()
+		# print('got dose')
+		df_dose = pd.DataFrame( [[ij for ij in i] for i in rows] )
+		# voltage_dose, counts_WS, counts_BS, counts_DF
+		df_dose.rename(columns={0: 'ID', 1: 'date', 2: 'dose_voltage', 3: 'HV_current', 4: 'HV_voltage'}, inplace=True)
+		df_dose = df_dose.set_index(['ID'])
+		df_dose['dose'] = df_dose['dose_voltage'] * 3000 / 5.5  # conversion factors according to current output signal muSv/hr
+		# df_dose['dose_corr'] = interp_dose(df_dose['dose'])  # uses the lookup table
+
+
+	except:
+		print('Error in retrieveLiveData')
+
+
+	return df_dose
 
 
 hours_to_plot = 3 # plot the past 3 hours for the live stream
@@ -105,11 +112,11 @@ layout = html.Div(children=[
 # LIVE callbacks
 ################################################################################################################################################
 # callback to update the label that indicates when the last query was exec
-@app.callback(
-	Output('display-time', 'children'),
-	[Input('live-plot-update', 'n_intervals')])
-def display_time(n):
-	return u'Last update: {}'.format(str(datetime.datetime.now()))
+# @app.callback(
+# 	Output('display-time', 'children'),
+# 	[Input('live-plot-update', 'n_intervals')])
+# def display_time(n):
+# 	return u'Last update: {}'.format(str(datetime.datetime.now()))
 
 # callback to read the database and store in a json objective
 @app.callback(
@@ -118,8 +125,8 @@ def display_time(n):
 def retrieve_data(n):
 	 t = int(float(hours_to_plot) * 3600.0)
 	 # some expensive clean data step
-	 df_live_db = retrieveLiveData(sql_engine, t)  # retrieve the past 2 hrs
-	 # print(df_live_db.head())
+	 df_live_db = retrieveLiveData(t)  # retrieve the past 2 hrs
+	 print(df_live_db.head())
 	 # more generally, this line would be
 	 # json.dumps(cleaned_df)
 	 return df_live_db.to_json(date_format='iso', orient='split')
@@ -133,7 +140,7 @@ def update_graph(jsonified_cleaned_data):
 	# more generally, this line would be
 	# json.loads(jsonified_cleaned_data)
 	df_live_db = pd.read_json(jsonified_cleaned_data, orient='split')
-	# print(df_live_db.head())
+
 	# plot each
 	# set a common x axis label!
 	traces = []
@@ -244,11 +251,11 @@ def update_graph(jsonified_cleaned_data):
 
 # callback to retrieve the data and plot it
 @app.callback(
-	Output('indicator-graphic-today', 'figure'),
-	[Input('button-plot-today', 'n_clicks')])
+	dash.dependencies.Output('indicator-graphic-today', 'figure'),
+	[dash.dependencies.Input('button-plot-today', 'n_clicks')])
 def update_figure_today(n_clicks):
 	t = int(float(hours_to_plot_today) * 3600.0)
-	df_dose = retrieveLiveData(sql_engine, t)  # retrieve the past 2 hrs
+	df_dose = retrieveLiveData(t)  # retrieve the past 2 hrs
 	# plot each
 	# set a common x axis label!
 	traces = []

@@ -11,7 +11,6 @@ from apps import app_live, app_histo
 
 # Dash CSS
 
-
 # app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 
 app.layout = html.Div([
