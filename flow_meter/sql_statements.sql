@@ -54,15 +54,6 @@ ALTER TABLE flow_meter_readout_live AUTO_INCREMENT = 0 # set to 0 for completely
 # ***************************************************************
 # ***************************************************************
 
-# Create the table microwave_generator_control
-CREATE TABLE microwave_generator_control (
-	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-	DLL_on boolean NOT NULL
-	);
-
-# Primary key
-ALTER TABLE microwave_generator_control
-ADD COLUMN id SERIAL PRIMARY KEY;
 
 
 # Create the table microwave_generator_command
@@ -79,12 +70,12 @@ ALTER TABLE microwave_generator_command
 ADD COLUMN id SERIAL PRIMARY KEY;
 
 
-
-
 # Create the table microwave_generator_power
 CREATE TABLE microwave_generator_power (
 	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-	power float NOT NULL
+	FP float,
+	RP float,
+	power_setpoint float
 	);
 
 # Primary key
@@ -93,24 +84,13 @@ ADD COLUMN id SERIAL PRIMARY KEY;
 
 
 
-# Create the table microwave_generator_reflected_power
-CREATE TABLE microwave_generator_reflected_power (
-	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-	power_out float NOT NULL,
-	power_reflected float NOT NULL
-	);
-
-# Primary key
-ALTER TABLE microwave_generator_reflected_power
-ADD COLUMN id SERIAL PRIMARY KEY;
-
-
 
 
 # Create the table microwave_generator_frequency
 CREATE TABLE microwave_generator_frequency (
 	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-	frequency float NOT NULL
+	frequency float,
+	frequency_setpoint float
 	);
 
 # Primary key
@@ -118,39 +98,13 @@ ALTER TABLE microwave_generator_frequency
 ADD COLUMN id SERIAL PRIMARY KEY;
 
 
-
-# Create the table microwave_generator_DLL
-CREATE TABLE microwave_generator_DLL (
-	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-	DLL_frequency float NOT NULL,
-	DLL_reflexion float NOT NULL
-	);
-
-# Primary key
-ALTER TABLE microwave_generator_DLL
-ADD COLUMN id SERIAL PRIMARY KEY;
-
-
-
-# Create the table microwave_generator_temperature
-CREATE TABLE microwave_generator_temperature (
-	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-	temperature1 float NOT NULL,
-	temperature2 float NOT NULL
-	);
-
-# Primary key
-ALTER TABLE microwave_generator_temperature
-ADD COLUMN id SERIAL PRIMARY KEY;
-
-
-
 # Create the table microwave_generator_state
 CREATE TABLE microwave_generator_state (
 	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-	relais_5 boolean NOT NULL,
-	relais_24 boolean NOT NULL,
-	rf_status boolean NOT NULL
+	external_safety boolean NOT NULL,
+	MW_ready boolean NOT NULL,
+	MW_on boolean NOT NULL,
+	fault_present boolean NOT NULL
 	);
 
 # Primary key

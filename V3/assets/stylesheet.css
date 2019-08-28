@@ -1,0 +1,63 @@
+.banner {
+    height: 75px;
+    margin: 0px -10px 10px;
+    background-color: rgb(66, 196, 247);
+    border-radius: 2px;
+}
+
+.banner h1{
+    color: white;
+    padding-top: 10px;
+    margin-left: 2%;
+    display: inline-block;
+}
+
+.graph-row {
+    border-bottom: 1px solid rgb(216, 216, 216);
+}
+
+.button-update-today-plot {
+    margin: auto;
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 10px 20px;
+}
+
+.live-plot {
+    border-radius: 5px;
+    border-width: 1px 1px 0px;
+    border-top-style: solid;
+    border-right-style: solid;
+    border-bottom-style: initial;
+    border-left-style: solid;
+    border-top-color: rgb(216, 216, 216);
+    border-right-color: rgb(216, 216, 216);
+    border-bottom-color: initial;
+    border-left-color: rgb(216, 216, 216);
+    border-image: initial;
+}
+
+.Title-center-header h3{
+    font-size: 2.25rem;
+    text-align: center;
+    font-weight: bold;
+    width: 30%;
+    color: rgb(66, 196, 247);
+    border-bottom: rgb(216, 216, 216);
+    margin: auto;
+    margin-bottom: 10px;
+    padding: 10px 20px;
+    border: 3px solid gray;
+}
+
+
+.Title-center h3{
+    font-size: 1.75rem;
+    text-align: center;
+    width: 30%;
+    color: rgb(66, 196, 247);
+    border-bottom: rgb(216, 216, 216);
+    margin: auto;
+    margin-bottom: 10px;
+    padding: 10px 20px;
+}
