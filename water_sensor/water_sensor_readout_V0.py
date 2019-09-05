@@ -45,7 +45,7 @@ while True:
 		# print('Raw reading from Arduino :' + str(valueRead)) # Read the newest output from the Arduino
 		y_vals = valueRead.decode().strip().split(',')  # s1, s2, s3
 		y_vals = [str(float(y)) for y in y_vals]
-
+		print(y_vals)
 		if len(y_vals) > 0:
 			save_sensor_data_to_db(y_vals, sql_engine) # save into DB
 
