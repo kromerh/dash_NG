@@ -21,7 +21,7 @@ connect_string = 'mysql+pymysql://%(user)s:%(pw)s@%(host)s:3306/%(db)s'% {"user"
 sql_engine = sql.create_engine(connect_string)
 
 def get_water_sensor_data(sql_engine, pastSeconds=7200):  # read past 2hrs by default
-    query = """SELECT * FROM water_sensor_data ORDER BY id DESC LIMIT {}""".format(pastSeconds)
+    query = """SELECT * FROM water_sensor_data ORDER BY time DESC LIMIT {}""".format(pastSeconds)
     data = pd.read_sql(query, sql_engine)
 
     data = data[['time', 's1', 's2', 's3']]
