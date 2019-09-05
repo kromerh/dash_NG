@@ -113,3 +113,13 @@ ADD COLUMN id SERIAL PRIMARY KEY;
 
 
 INSERT INTO microwave_generator_control (time_created, command, executed) VALUES ('2019-06-')
+
+
+
+
+CREATE TABLE water_sensor_data (
+	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+	s1 boolean NOT NULL,
+	s2 boolean NOT NULL,
+	s3 boolean NOT NULL
+	);
