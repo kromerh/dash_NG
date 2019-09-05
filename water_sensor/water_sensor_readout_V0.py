@@ -43,20 +43,13 @@ while True:
 		# print('Raw reading from Arduino :' + str(valueRead)) # Read the newest output from the Arduino
 		y_vals = valueRead.decode().strip().split(',')  # s1, s2, s3
 		y_vals = [str(float(y)) for y in y_vals]
-		print(y_vals)
 
+		if len(y_vals) > 0:
+			save_sensor_data_to_db(y_vals) # save into DB
 
-
-		# t = re.findall(r'V_1 (.+)', voltageStr)
-
-		# if len(t) > 0:
-		# 	voltage = t[0]
-		# 	# print(voltage)
-		# 	saveFlowMeterVoltageToDB(voltage) # save into DB
-
-		# sleep(0.5) # Delay
-		# ser.flushInput()  #flush input buffer, discarding all its contents
-		# ser.flushOutput() #flush output buffer, aborting current output and discard all that is in buffer
+		sleep(0.1) # Delay
+		ser.flushInput()  #flush input buffer, discarding all its contents
+		ser.flushOutput() #flush output buffer, aborting current output and discard all that is in buffer
 	except KeyboardInterrupt:
 		print('Ctrl + C. Exiting. Flushing serial connection.')
 		ser.flushInput()  #flush input buffer, discarding all its contents
