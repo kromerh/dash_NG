@@ -40,10 +40,10 @@ while True:
 		# READING 
 		valueRead = ser.readline(500) # b'V_1 1.30, 4.20, V_out 215.04\r\n'
 
-		print('Raw reading from Arduino :' + str(valueRead)) # Read the newest output from the Arduino
-		# voltageStr = str(valueRead).split(',')
+		# print('Raw reading from Arduino :' + str(valueRead)) # Read the newest output from the Arduino
+		y_vals = str(valueRead).split(',')  # s1, s2, s3
 
-		# voltageStr = voltageStr[0]
+		print(y_vals)
 
 
 
