@@ -12,18 +12,19 @@ credentials = pd.read_csv(credentials_file, header=0)
 user = credentials['username'].values[0]
 pw = credentials['password'].values[0]
 
+host="twofast-RPi3-0"  # your host
+user=user  # username
+passwd=pw  # password
+db="NG_twofast_DB" # name of the database
+connect_string = 'mysql+pymysql://%(user)s:%(pw)s@%(host)s/%(db)s'% {"user": user, "pw": pw, "host": host, "db": db}
+sql_engine = sql.create_engine(connect_string)
 
+# truncate the command table
 
-db = pymysql.connect(host="twofast-RPi3-0",  # your host
-					 user=user,  # username
-					 passwd=pw,  # password
-					 db="NG_twofast_DB", # name of the database
-					 charset='utf8',
-					 cursorclass=pymysql.cursors.DictCursor)
 
 arduinoPort = '/dev/ttyACM0'  # might need to be changed if another arduino is plugged in or other serial
 
-def save_sensor_data_to_db(y):
+def save_sensor_data_to_db(y, sql_engine):
 	"""
 	y: list of the flags of s1, s2, s3. 1 means no water, 0 means water
 	"""
@@ -45,7 +46,7 @@ while True:
 		y_vals = [str(float(y)) for y in y_vals]
 
 		if len(y_vals) > 0:
-			save_sensor_data_to_db(y_vals) # save into DB
+			save_sensor_data_to_db(y_vals, sql_engine) # save into DB
 
 		sleep(0.1) # Delay
 		ser.flushInput()  #flush input buffer, discarding all its contents
