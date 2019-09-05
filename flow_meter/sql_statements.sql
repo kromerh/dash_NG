@@ -123,3 +123,6 @@ CREATE TABLE water_sensor_data (
 	s2 boolean NOT NULL,
 	s3 boolean NOT NULL
 	);
+# Primary key
+ALTER TABLE water_sensor_data
+ADD COLUMN id SERIAL PRIMARY KEY;
