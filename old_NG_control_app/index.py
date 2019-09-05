@@ -23,6 +23,8 @@ index_page = html.Div([
 	dcc.Link('Go to live data plotter', href='/apps/app_live'),
 	html.Br(),
 	dcc.Link('Go to historical data plotter', href='/apps/app_histo'),
+	html.Br(),
+	dcc.Link('Go to water sensor readout', href='/apps/app_water_sensor'),
 ])
 
 # Update the index
@@ -33,6 +35,8 @@ def display_page(pathname):
 		return app_live.layout
 	elif pathname == '/apps/app_histo':
 		return app_histo.layout
+	elif pathname == '/apps/app_water_sensor':
+		return app_water_sensor.layout
 	else:
 		return index_page
 	# You could also return a 404 "URL not found" page here
