@@ -21,7 +21,7 @@ connect_string = 'mysql+pymysql://%(user)s:%(pw)s@%(host)s:3306/%(db)s'% {"user"
 sql_engine = sql.create_engine(connect_string)
 
 def get_water_sensor_data(sql_engine, pastSeconds=7200):  # read past 2hrs by default
-    query = """SELECT * FROM water_sensor_data ORDER BY time DESC LIMIT {}""".format(pastSeconds)
+    query = """SELECT * FROM water_sensor_data ORDER BY time ASC LIMIT {}""".format(pastSeconds)
     data = pd.read_sql(query, sql_engine)
 
     data = data[['time', 's1', 's2', 's3']]
@@ -104,8 +104,8 @@ def retrieve_data(n):
 # callback to plot water sensor
 @app.callback(
 	Output('indicator-graphic-live-water', 'figure'),
-	[Input('live-db-values', 'children')])
-def update_graph(jsonified_cleaned_data):
+	[Input('live-db-values-water', 'children')])
+def update_graph_water(jsonified_cleaned_data):
 
 	# more generally, this line would be
 	# json.loads(jsonified_cleaned_data)
@@ -128,7 +128,7 @@ def update_graph(jsonified_cleaned_data):
 	# ))
 	# sensor 1
 	traces.append(go.Scatter(
-		x=df_live_db['date'],
+		x=df_live_db['time'],
 		y=df_live_db['s1'],
 		text='sensor 1',
 		line=go.scatter.Line(
@@ -145,7 +145,7 @@ def update_graph(jsonified_cleaned_data):
 	))
 	# sensor2
 	traces.append(go.Scatter(
-		x=df_live_db['date'],
+		x=df_live_db['time'],
 		y=df_live_db['s2'],
 		text='sensor 2',
 		line=go.scatter.Line(
@@ -162,7 +162,7 @@ def update_graph(jsonified_cleaned_data):
 	))
 	# sensor 3
 	traces.append(go.Scatter(
-		x=df_live_db['date'],
+		x=df_live_db['time'],
 		y=df_live_db['s3'],
 		text='sensor 3',
 		line=go.scatter.Line(
