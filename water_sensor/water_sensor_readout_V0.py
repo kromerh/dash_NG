@@ -4,6 +4,7 @@ import sys
 import pandas as pd
 import pymysql
 import re
+import sqlalchemy as sql
 
 # read password and user to database
 credentials_file = r'./credentials.pw'
