@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output, State
 
 
 from app import app # calls the app
-from apps import app_live, app_histo
+from apps import app_live, app_histo, app_water_sensor
 
 # Dash CSS
 
