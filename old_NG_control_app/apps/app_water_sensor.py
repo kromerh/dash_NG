@@ -50,7 +50,7 @@ layout = html.Div(children=[
 				], className='Title-center-header'),
 
 			html.Div([
-				html.H3(id='display-time')
+				html.H3(id='display-time-water')
 				], className='Title-center'),
 
 			html.Div([
@@ -64,8 +64,8 @@ layout = html.Div(children=[
 		# Hidden div inside the app that stores the data from the live db
 		html.Div(
 			[
-				dcc.Interval(id="live-plot-update", interval=2000, n_intervals=0),
-				html.Div(id='live-db-values')
+				dcc.Interval(id="live-plot-update-water", interval=2000, n_intervals=0),
+				html.Div(id='live-db-values-water')
 
 			],
 			style={"visibility": "hidden"},
@@ -86,15 +86,15 @@ layout = html.Div(children=[
 ################################################################################################################################################
 # callback to update the label that indicates when the last query was exec
 @app.callback(
-	Output('display-time', 'children'),
-	[Input('live-plot-update', 'n_intervals')])
+	Output('display-time-water', 'children'),
+	[Input('live-plot-update-water', 'n_intervals')])
 def display_time(n):
 	return u'Last update: {}'.format(str(datetime.datetime.now()))
 
 # callback to read the database and store in a json objective
 @app.callback(
-	Output('live-db-values', 'children'),
-	[Input('live-plot-update', 'n_intervals')])
+	Output('live-db-values-water', 'children'),
+	[Input('live-plot-update-water', 'n_intervals')])
 def retrieve_data(n):
 	 t = int(float(hours_to_plot) * 3600.0)
 	 data = get_water_sensor_data(sql_engine, t)  # retrieve the past 2 hrs
