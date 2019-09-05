@@ -54,7 +54,7 @@ layout = html.Div(children=[
 				], className='Title-center'),
 
 			html.Div([
-			   dcc.Graph(id='indicator-graphic-live')
+			   dcc.Graph(id='indicator-graphic-live-water')
 			   ], className='five columns live-plot'),  # displays HV data
 
 		], className='row graph-row'),
@@ -103,14 +103,14 @@ def retrieve_data(n):
 
 # callback to plot water sensor
 @app.callback(
-	Output('indicator-graphic-live', 'figure'),
+	Output('indicator-graphic-live-water', 'figure'),
 	[Input('live-db-values', 'children')])
 def update_graph(jsonified_cleaned_data):
 
 	# more generally, this line would be
 	# json.loads(jsonified_cleaned_data)
 	df_live_db = pd.read_json(jsonified_cleaned_data, orient='split')
-	# print(df_live_db.head())
+	print(df_live_db.head())
 	# plot each
 	# set a common x axis label!
 	traces = []
