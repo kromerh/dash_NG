@@ -41,7 +41,7 @@ while True:
 		valueRead = ser.readline(500) # b'V_1 1.30, 4.20, V_out 215.04\r\n'
 
 		# print('Raw reading from Arduino :' + str(valueRead)) # Read the newest output from the Arduino
-		y_vals = str(valueRead).split(',')  # s1, s2, s3
+		y_vals = valueRead.decode()  # s1, s2, s3
 
 		print(y_vals)
 
