@@ -126,7 +126,7 @@ def flow_meter_setpoint_button(n_clicks, setpoint_value):
 	if n_clicks:
 		print(f'Inside flow_meter_setpoint_button, n_clicks is {n_clicks}, setpoint_value is {setpoint_value}')
 		#sanity check that it is between 0 and 5
-		if (setpoint_value > 0.0) & (setpoint_value < 5.0):
+		if (setpoint_value >= 0.0) & (setpoint_value < 5.0):
 
 			# update field in the database
 			setFlowMeterControlValues(setpoint_value, sql_engine)
