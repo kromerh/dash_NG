@@ -9,7 +9,7 @@ Runs on twofast-RPi3-0, user pi (with root access), password is the usual.
 - Name: NG_twofast_DB
 
 - Remote access
-  - in `/etc/mysql/mariadb.conf.d` the file `sudo nano 50-server.cnf` contains the bind-address 
+  - in `/etc/mysql/mariadb.conf.d` the file `sudo nano 50-server.cnf` contains the bind-address
   - Database is stored under `//fs03/LTH_Neutimag/hkromer/08_Data/mariaDB.mysql/mysql` To see the filesize in MB: `ls -l --block-size=M`
 
 - If you want to make a dump of the database: `mysqldump -u root -p NG_twofast_DB > NAMEOFTHEDUMP.sql`
@@ -43,9 +43,9 @@ At 4 am a mysql script will clear all those entries that have NULL everywhere an
 - Two different layouts:
   - Live: Reads the whole live database and plots high voltage, current, dose and neutron output
   - Historical: Chose a date from which you wish to display the high voltage, current, dose at that particular day. Every morning at 4 AM the live database is backed up into the historical one
-  
-  
-  
+
+
+
 # BROOKS Flow Meter
 
 ## Pin connection
@@ -63,3 +63,42 @@ At 4 am a mysql script will clear all those entries that have NULL everywhere an
 - Check the description of the readout and control structure via flow_meter/2019-06-27.Layout.BROOKSControl and 2019-06-27.Layout.BROOKSReadout
 
 
+# Microwave Ion Source Control Motor
+
+## Description
+
+- Motor is FITEC FS5106 R, datasheet can be found for example here: https://www.pololu.com/product/3430
+- It has three wires, red is 5V, brown is GND, orange is control
+- Arduino Uno sketch is found here: dash_NG/microwave_motor/microwave_motor/microwave_motor.ino
+
+## Physical connection
+
+- Use external power supply for the Arduino, or directly power the motor with an external power supply
+
+### Pin connection
+
+| Number  | Cable color  | Description  | Arduino PIN |
+|:-:|:-:|:-:|:-:|
+| 1  | Brown | Ground  | GND |
+| 2  | Red  | 5V power supply  | 5V |
+| 3  | Orange  | Control of motor  | 7 |
+
+## Code
+
+### Raspberry Pi3 - twofast-rpi3-5
+
+- Reads the database every 3 seconds
+	- Looks up the table microwaveControlMotor, where it reads which command must be executed next, this is only one line, i.e. one command
+	- A command can be: move forward (1), move backward (2), start MW (3), stop MW (4)
+		- move forward (1): the motor moves a bit clockwise (for 1 second)
+		- move backward (2): the motor moves a bit counter clockwise (for 1 second)
+		- start MW (3): the motor moves so that the start microwave button is pressed, this takes AMOUNTOFSECONDS
+		- stop MW (4): the motor moves so that the stop microwave button is pressed, this takes AMOUNTOFSECONDS
+	- Sends the corresponding command to the arduino. It sends via serial connection speed (1 to 92 for forward, 94 to 180 for backward) and the time (which Arduino will put into a delay)
+	- After the command was sent, it updates the command in the command table database to have been executed with the correct timestamp
+
+### Arduino - microwave_motor.ino
+
+- reads serial from the RPi3
+- receives an integer for the speed and the time for an delay at which to run the motor at at that speed
+- otherwise it sends 93 to the motor (stop it)

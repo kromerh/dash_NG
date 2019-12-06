@@ -36,5 +36,5 @@ def display_page(pathname):
 	# You could also return a 404 "URL not found" page here
 
 if __name__ == '__main__':
-	# app.run_server(debug=False, port=5000, host='0.0.0.0')
-	app.run_server(debug=True)
+	app.run_server(debug=False, port=5050, host='0.0.0.0')
+	# app.run_server(debug=True)
