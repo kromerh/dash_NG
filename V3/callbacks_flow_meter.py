@@ -136,7 +136,7 @@ def flow_meter_setpoint_button(n_clicks, setpoint_value):
 
 			return setpoint_value
 	else:
-		return 2000
+		return 0
 
 
 # callback to read the database and store in a json objective

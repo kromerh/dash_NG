@@ -73,7 +73,7 @@ layout_base = html.Div(
 							[
 								daq.NumericInput(
 									id='flow-meter-setpoint-numeric-input',
-									value=2.0,
+									value=0.0,
 									min = 0,
 									max = 5,
 									size=80,
