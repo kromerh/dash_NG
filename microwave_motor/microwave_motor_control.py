@@ -106,7 +106,7 @@ while True:
 
 	except KeyboardInterrupt:
 		print('Ctrl + C. Exiting. Flushing serial connection.')
-		if master_mode == 'operation':
-			ser.flushInput()  #flush input buffer, discarding all its contents
-			ser.flushOutput() #flush output buffer, aborting current output and discard all that is in buffer
+		
+		ser.flushInput()  #flush input buffer, discarding all its contents
+		ser.flushOutput() #flush output buffer, aborting current output and discard all that is in buffer
 		sys.exit(1)
