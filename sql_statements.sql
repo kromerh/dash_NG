@@ -50,6 +50,24 @@ ALTER TABLE flow_meter_readout_live AUTO_INCREMENT = 0 # set to 0 for completely
 
 # ***************************************************************
 # ***************************************************************
+# MICROWAVE MOTOR CONTROL
+# ***************************************************************
+# ***************************************************************
+
+
+
+# Create the table microwave_generator_command
+CREATE TABLE microwave_motor_command (
+	time_created TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+	time_executed TIMESTAMP(6),
+	command text NOT NULL,
+	executed boolean NOT NULL
+	);
+
+
+
+# ***************************************************************
+# ***************************************************************
 # MICROWAVE GENERATOR CONTROL and READOUT
 # ***************************************************************
 # ***************************************************************
