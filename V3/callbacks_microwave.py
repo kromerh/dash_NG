@@ -33,8 +33,9 @@ sql_engine = sql.create_engine(connect_string)
 
 
 def MWButtonControl(sql_engine, value):
-	timeNow = datetime.datetime.now()
-	qry = "INSERT INTO microwave_motor_command (time_created, command, executed) VALUES (%(time)s, \"%(value)s\", 0)" % {"time": timeNow, "value": value}
+	timeNow = datetime.now()
+	qry = "INSERT INTO microwave_motor_command (time_created, command, executed) VALUES (\"%(time)s\", \"%(value)s\", 0)" % {"time": timeNow, "value": value}
+	print(qry)
 	sql_engine.execute(qry)
 
 	
@@ -56,52 +57,52 @@ def MWButtonControl(sql_engine, value):
 # 	)
 # 	return status
 
-# # Start the microwave button
-# @app.callback(
-# 	# Output("microwave-status-monitor", "value"),
-# 	Output("microwave-MW-button-on", "children"),
-# 	[Input("btn-mw-motor-on", "n_clicks")]
-# )
-# def btn_mw_on(n_clicks):
-# 	if n_clicks:
-# 		sleep(3)
-# 		print(f'Starting MW, n_clicks: {n_clicks}')
-# 		value = "88,800"
-# 		print(f'Sending {value}')
+# Start the microwave button
+@app.callback(
+	# Output("microwave-status-monitor", "value"),
+	Output("microwave-MW-button-on", "children"),
+	[Input("btn-mw-motor-on", "n_clicks")]
+)
+def btn_mw_on(n_clicks):
+	if n_clicks:
+		time.sleep(3)
+		print(f'Starting MW, n_clicks: {n_clicks}')
+		value = "88,1400"
+		print(f'Sending {value}')
 		
-# 		MWButtonControl(sql_engine, value)
+		MWButtonControl(sql_engine, value)
 				
-# 		sleep(3)
-# 		value = "92,1100"
-# 		print(f'Sending {value}')
+		time.sleep(3)
+		value = "93,1000"
+		print(f'Sending {value}')
 		
-# 		MWButtonControl(sql_engine, value)
-# 		status = "ON"
+		MWButtonControl(sql_engine, value)
+		status = "ON"
 
-# 		return status
+		return status
 
 
-# # Stop the microwave button
-# @app.callback(
-# 	Output("microwave-MW-button-off", "children"),
-# 	[Input("btn-mw-motor-off", "n_clicks")]
-# )
-# def btn_mw_off(n_clicks):
-# 	if n_clicks:
-# 		sleep(3)
-# 		print(f'Stopping MW, n_clicks: {n_clicks}')
-# 		value = "92,1100"
-# 		print(f'Sending {value}')
+# Stop the microwave button
+@app.callback(
+	Output("microwave-MW-button-off", "children"),
+	[Input("btn-mw-motor-off", "n_clicks")]
+)
+def btn_mw_off(n_clicks):
+	if n_clicks:
+		time.sleep(3)
+		print(f'Stopping MW, n_clicks: {n_clicks}')
+		value = "93,1200"
+		print(f'Sending {value}')
 		
-# 		MWButtonControl(sql_engine, value)
+		MWButtonControl(sql_engine, value)
 				
 
-# 		sleep(3)
-# 		value = "88,800"
-# 		print(f'Sending {value}')
+		time.sleep(3)
+		value = "88,1200"
+		print(f'Sending {value}')
 		
-# 		MWButtonControl(sql_engine, value)
-# 		status = "OFF"
+		MWButtonControl(sql_engine, value)
+		status = "OFF"
 		
-# 		return status
+		return status
 

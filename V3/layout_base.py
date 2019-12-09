@@ -255,14 +255,19 @@ layout_base = html.Div(
 							[
 								html.Button(
 									"MOTOR ON",
-									id='btn-mw-motor-on'
+									id='btn-mw-motor-on',
+									style={
+										
+										# "paddingTop": "2.5%",
+										"marginBottom": "10%",
+									},
 								),
 								html.Button(
 									"MOTOR OFF",
 									id='btn-mw-motor-off'
 								),
-							], className='row'
-							, style={'marginLeft':"15%","marginBottom": "5.5%"}
+							], className='two columns'
+							, style={'marginLeft':"40%","marginBottom": "5.5%"}
 						)
 					],
 					className="four columns",
