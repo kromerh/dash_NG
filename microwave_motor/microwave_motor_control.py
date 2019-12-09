@@ -100,7 +100,7 @@ while True:
 				# get the sleep time (delay)
 				delay = cmd.split(",")[1]
 				delay = int(delay)/1000 + 0.5
-				print("sleeping for " + delay + " seconds")
+				print("sleeping for " + str(delay) + " seconds")
 				sleep(delay)
 
 
