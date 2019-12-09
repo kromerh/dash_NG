@@ -69,10 +69,10 @@ def read_state_table(sql_engine, pastSeconds=60): # read past 60secs by default
 
 def MWButtonControl(sql_engine, value):
 	timeNow = datetime.datetime.now()
-    qry = "INSERT INTO microwave_motor_command (time_created, command, executed) VALUES (%(time)s, \"%(value)s\", 0)" % {"time": timeNow, "value": value}
-    sql_engine.execute(qry)
+	qry = "INSERT INTO microwave_motor_command (time_created, command, executed) VALUES (%(time)s, \"%(value)s\", 0)" % {"time": timeNow, "value": value}
+	sql_engine.execute(qry)
 
-    
+	
 
 
 # CALLBACKS
