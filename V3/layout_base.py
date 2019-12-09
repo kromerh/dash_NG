@@ -321,23 +321,13 @@ layout_base = html.Div(
 						html.Hr(),
 						html.Div(
 							[
-								daq.PowerButton(
-									id='btn-MW-on',
-									on=False,
-									label="MW ON/OFF",
-									labelPosition='bottom',
-									color="red",
-									disabled=False,
-									className='six columns'
+								html.Button(
+									"MOTOR ON",
+									id='btn-mw-motor-on'
 								),
-								daq.PowerButton(
-									id='btn-autotune-start',
-									on=False,
-									label="Autotune ON/OFF",
-									labelPosition='bottom',
-									color="green",
-									# disabled=True,
-									className='six columns'
+								html.Button(
+									"MOTOR OFF",
+									id='btn-mw-motor-off'
 								),
 							], className='row'
 							, style={'marginLeft':"15%","marginBottom": "5.5%"}

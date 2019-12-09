@@ -67,39 +67,107 @@ def read_state_table(sql_engine, pastSeconds=60): # read past 60secs by default
 	return df
 
 
+def MWButtonControl(sql_engine, value):
+	timeNow = datetime.datetime.now()
+    qry = "INSERT INTO microwave_motor_command (time_created, command, executed) VALUES (%(time)s, \"%(value)s\", 0)" % {"time": timeNow, "value": value}
+    sql_engine.execute(qry)
 
+    
 
 
 # CALLBACKS
 
-# Textarea Communication
+# Start the microwave button
 @app.callback(
 	Output("microwave-status-monitor", "value"),
-	[Input("microwave-readout-interval", "n_intervals")],
-	[State("microwave-power-values", "children")]
+	[Input("btn-mw-motor-on", "n_clicks")]
 )
-def microwave_text_area(intervals,
-	json_data
-	):
-	last_db_reading = -1
-	try:
-		df = pd.read_json(json_data, orient='split')
-		if len(df) > 0:
-			last_db_reading = df.loc[0,'time']
-			last_db_reading = pd.to_datetime(last_db_reading)
-			last_db_reading = last_db_reading.strftime("%Y-%m-%d, %H:%M:%S")
-		else:
-			last_db_reading = -1
-	except:
-		pass
+def btn_mw_on(n_clicks):
+	if n_clicks:
+		sleep(3)
+		print(f'Starting MW, n_clicks: {n_clicks}')
+		value = "88,800"
+		print(f'Sending {value}')
+		
+		MWButtonControl(sql_engine, value)
+				
+		status = (
+			"-----------STATUS------------\n"
+			+ "Sending to mw motor: " + str(value) + "\n"
+		)
+		sleep(3)
+		value = "92,1100"
+		print(f'Sending {value}')
+		
+		MWButtonControl(sql_engine, value)
+		status = (
+			status 
+			+ "Sending to mw motor: " + str(value) + "\n"
+		)
+
+		return status
 
 
-	status = (
-		"-----------STATUS------------\n"
-		+ "Last reading microwave power (FP) received: " + str(last_db_reading) + "\n"
-	)
+# Stop the microwave button
+@app.callback(
+	Output("microwave-status-monitor", "value"),
+	[Input("btn-mw-motor-off", "n_clicks")]
+)
+def btn_mw_off(n_clicks):
+	if n_clicks:
+		sleep(3)
+		print(f'Stopping MW, n_clicks: {n_clicks}')
+		value = "92,1100"
+		print(f'Sending {value}')
+		
+		MWButtonControl(sql_engine, value)
+				
+		status = (
+			"-----------STATUS------------\n"
+			+ "Sending to mw motor: " + str(value) + "\n"
+		)
+		sleep(3)
+		value = "88,800"
+		print(f'Sending {value}')
+		
+		MWButtonControl(sql_engine, value)
+		status = (
+			status 
+			+ "Sending to mw motor: " + str(value) + "\n"
+		)
+		
+		return status
 
-	return status
+
+
+# # Textarea Communication
+# @app.callback(
+# 	Output("microwave-status-monitor", "value"),
+# 	[Input("microwave-readout-interval", "n_intervals")],
+# 	[State("microwave-power-values", "children")]
+# )
+# def microwave_text_area(intervals,
+# 	json_data
+# 	):
+# 	last_db_reading = -1
+# 	try:
+# 		df = pd.read_json(json_data, orient='split')
+# 		if len(df) > 0:
+# 			last_db_reading = df.loc[0,'time']
+# 			last_db_reading = pd.to_datetime(last_db_reading)
+# 			last_db_reading = last_db_reading.strftime("%Y-%m-%d, %H:%M:%S")
+# 		else:
+# 			last_db_reading = -1
+# 	except:
+# 		pass
+
+
+# 	status = (
+# 		"-----------STATUS------------\n"
+# 		+ "Last reading microwave power (FP) received: " + str(last_db_reading) + "\n"
+# 	)
+
+# 	return status
 
 
 # microwave-power-values
