@@ -69,7 +69,7 @@ def sendCommandToMotor(command, command_id):
 	# send
 	ser.write(valueSend.encode()) # Convert the decimal number to ASCII then send it to the Arduino
 	print("Sent to Arduino:" + str(valueSend.encode()))
-	sleep(0.5) # Delay
+
 	# update as command having executed, this assumes that sending to the Arduino is equivalent to it being executed.
 	timeNow = datetime.datetime.now()
 	updateCommandAsExecuted(command_id, timeNow, sql_engine)
@@ -97,6 +97,12 @@ while True:
 
 				# send the command, in there it also updates the time and sets executed to 1
 				sendCommandToMotor(cmd, cmd_id)
+				# get the sleep time (delay)
+				delay = cmd.split(",")[1]
+				delay = int(delay)/1000 + 0.5
+				print("sleeping for " + delay + " seconds")
+				sleep(delay)
+
 
 	except KeyboardInterrupt:
 		print('Ctrl + C. Exiting. Flushing serial connection.')
