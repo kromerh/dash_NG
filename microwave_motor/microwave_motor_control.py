@@ -84,9 +84,10 @@ while True:
 
 		# if there are some commands to execute, send them all to the microwave generator
 		if len(df_commands) > 0:
-
+			print('found commands:')
+			print(df_commands)
 			# loop over all the rows to execute the commands line by line
-			for index, row in df.iterrows():
+			for index, row in df_commands.iterrows():
 
 				# get command from the row, convert to string just to be sure
 				cmd = str(row['command'])
