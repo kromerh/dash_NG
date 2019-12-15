@@ -20,7 +20,8 @@ WHERE id = 1;
 # Create the table flow_meter_readout_live
 CREATE TABLE flow_meter_readout_live (
 	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-	read_voltage FLOAT NOT NULL
+	read_voltage FLOAT NOT NULL,
+	set_voltage FLOAT NOT NULL
 	);
 
 
@@ -31,7 +32,8 @@ ADD COLUMN id SERIAL PRIMARY KEY;
 # Create the table flow_meter_readout_storage
 CREATE TABLE flow_meter_readout_storage (
 	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-	read_voltage FLOAT NOT NULL
+	read_voltage FLOAT NOT NULL,
+	set_voltage FLOAT NOT NULL
 	);
 
 # Primary key

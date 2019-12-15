@@ -40,11 +40,11 @@ db = pymysql.connect(host="twofast-RPi3-0",  # your host
 
 arduinoPort = '/dev/ttyACM0'  # might need to be changed if another arduino is plugged in or other serial
 
-def saveFlowMeterVoltageToDB(voltage):
+def saveFlowMeterVoltageToDB(voltage, setpoint_voltage):
 	# Create a Cursor object to execute queries.
 	cur = db.cursor()
 	try:
-		cur.execute("""INSERT INTO flow_meter_readout_live (read_voltage) VALUES (%s)""", (voltage))
+		cur.execute("""INSERT INTO flow_meter_readout_live (read_voltage, set_voltage) VALUES (%s, %s)""", (voltage, setpoint_voltage))
 	except:
 		cur.rollback()
 
@@ -87,7 +87,7 @@ while True:
 		if len(t) > 0:
 			voltage = t[0]
 			# print(voltage)
-			saveFlowMeterVoltageToDB(voltage) # save into DB
+			saveFlowMeterVoltageToDB(voltage, setpoint_voltage) # save into DB
 
 		sleep(0.5) # Delay
 		ser.flushInput()  #flush input buffer, discarding all its contents

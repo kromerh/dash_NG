@@ -113,7 +113,9 @@ def command_string(start, stop):
 	[Input("flow-meter-setpoint-numeric-input", "value")]
 )
 def flow_meter_setpoint_to_hold(setpoint_value):
-	# print(setpoint_value)
+	print(setpoint_value)
+	# conver from mV to V
+	setpoint_value = setpoint_value / 1000.0
 	return setpoint_value
 
 # Send hold setpoint mass flow to RPi
@@ -217,6 +219,23 @@ def plot_graph_data(json_data):
 			opacity=1,
 
 			name='Voltage [V]'
+		))
+		# set voltage
+		traces.append(go.Scatter(
+			x=df['time'],
+			y=df['set_voltage'],
+			text='Set voltage [V]',
+			line=go.scatter.Line(
+				color='orange',
+				# width=1.5
+			),
+			# mode='markers',
+			mode='lines+markers',
+			# marker={
+			#     'size': 15,
+			#     'line': {'width': 0.5, 'color': 'white'}
+			# },
+			name='Set voltage [V]'
 		))
 
 	except:

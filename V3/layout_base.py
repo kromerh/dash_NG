@@ -75,9 +75,9 @@ layout_base = html.Div(
 									id='flow-meter-setpoint-numeric-input',
 									value=0.0,
 									min = 0,
-									max = 5,
-									size=80,
-									label='Setpoint (0 - 5V)',
+									max = 5000,
+									size=100,
+									label='Setpoint (0 - 5000 mV)',
 									labelPosition='bottom'
 								),
 								html.Button(
@@ -257,7 +257,7 @@ layout_base = html.Div(
 									"MOTOR ON",
 									id='btn-mw-motor-on',
 									style={
-										
+
 										# "paddingTop": "2.5%",
 										"marginBottom": "10%",
 									},
