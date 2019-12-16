@@ -15,6 +15,9 @@ void setup() {
 
 
 void loop() { 
+        // stop the motor
+        myservo.write(90); 
+        delay(200);  
         // send data only when you receive data:
         if (Serial.available() > 0) {
                 // read the incoming byte:
@@ -28,11 +31,11 @@ void loop() {
                 Serial.println(dt);              
                 myservo.write(rs.toInt()); 
                 delay(dt.toInt());  
-                delay(100);              
+                delay(200);              
         }
         // stop the motor
         myservo.write(90); 
-        delay(100);  
+        delay(200);  
 
   
 } 
