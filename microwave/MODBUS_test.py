@@ -5,5 +5,5 @@ except ValueError:
     print("Error with host or port params")
 
 
-regs_list_1 = c.read_holding_registers(104, 10)
+regs_list_1 = c.read_holding_registers(104, 8)
 print(regs_list_1)
