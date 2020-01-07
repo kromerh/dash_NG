@@ -1,6 +1,6 @@
 from pyModbusTCP.client import ModbusClient
 try:
-    c = ModbusClient(host="127.0.0.1", port=502, auto_open=True, auto_close=True)
+    c = ModbusClient(host="192.168.50.1", port=502, auto_open=True, auto_close=True)
 except ValueError:
     print("Error with host or port params")
 
