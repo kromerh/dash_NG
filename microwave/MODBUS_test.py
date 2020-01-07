@@ -43,5 +43,5 @@ except ValueError:
 # print(addr)
 # print(regs_list_1)
 
-lst = c.read_coils(1,10)
+lst = c.read_coils(104,8)
 print(lst)
