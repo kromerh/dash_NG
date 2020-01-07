@@ -4,6 +4,6 @@ try:
 except ValueError:
     print("Error with host or port params")
 
-for ii in range(0,105)
+for ii in range(0,105):
 	regs_list_1 = c.read_holding_registers(ii, 8)
 	print(regs_list_1)
