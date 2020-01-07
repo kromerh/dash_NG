@@ -14,30 +14,32 @@ except ValueError:
 
 
 
-# for ii in range(104,118):
+# for ii in range(100,120):
 # 	returnlist = []
-# 	for jj in range(0,10):
+# 	for jj in range(0,20):
 # 		regs_list_1 = c.read_holding_registers(ii, jj)
 # 		returnlist.append(regs_list_1)
 # 	print(ii, returnlist)
 
-addr = 104
-regs_list_1 = c.read_holding_registers(addr, 20)
-print(addr)
-print(regs_list_1)
+for ii in range(100,120):
 
-addr = 108
-regs_list_1 = c.read_holding_registers(addr, 20)
-print(addr)
-print(regs_list_1)
+	regs_list_1 = c.read_holding_registers(ii, 20)
+
+	print(ii, regs_list_1)
+
+# addr = 104
+# regs_list_1 = c.read_holding_registers(addr, 20)
+# print(addr)
+# print(regs_list_1)
+
+# addr = 108
+# regs_list_1 = c.read_holding_registers(addr, 20)
+# print(addr)
+# print(regs_list_1)
 
 
-addr = 102
-regs_list_1 = c.read_holding_registers(addr, 20)
-print(addr)
-print(regs_list_1)
+# addr = 102
+# regs_list_1 = c.read_holding_registers(addr, 20)
+# print(addr)
+# print(regs_list_1)
 
-addr = 102
-regs_list_1 = c.read_coils(addr, 200)
-print(addr)
-print(regs_list_1)
