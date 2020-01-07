@@ -14,9 +14,13 @@ except ValueError:
 
 
 
-for ii in range(104,118):
-	returnlist = []
-	for jj in range(0,10):
-		regs_list_1 = c.read_holding_registers(ii, jj)
-		returnlist.append(regs_list_1)
-	print(ii, returnlist)
+# for ii in range(104,118):
+# 	returnlist = []
+# 	for jj in range(0,10):
+# 		regs_list_1 = c.read_holding_registers(ii, jj)
+# 		returnlist.append(regs_list_1)
+# 	print(ii, returnlist)
+
+
+regs_list_1 = c.read_holding_registers(104, 20)
+print(regs_list_1)
