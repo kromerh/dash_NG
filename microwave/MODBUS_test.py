@@ -4,10 +4,19 @@ try:
 except ValueError:
     print("Error with host or port params")
 
-for ii in range(0,65535):
+# for ii in range(0,65535):
+# 	returnlist = []
+# 	for jj in range(0,2000):
+# 		regs_list_1 = c.read_holding_registers(ii, jj)
+# 		returnlist.append(regs_list_1)
+# 	if not None in returnlist:
+# 		print(ii, returnlist)
+
+
+
+for ii in range(104,118):
 	returnlist = []
-	for jj in range(0,2000):
+	for jj in range(0,10):
 		regs_list_1 = c.read_holding_registers(ii, jj)
 		returnlist.append(regs_list_1)
-	if not None in returnlist:
-		print(ii, returnlist)
+	print(ii, returnlist)
