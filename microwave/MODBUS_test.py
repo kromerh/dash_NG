@@ -23,12 +23,16 @@ except ValueError:
 
 addr = 104
 regs_list_1 = c.read_holding_registers(addr, 20)
-print(str(addr) + ' ' + regs_list_1)
+print(addr)
+print(regs_list_1)
 
 addr = 108
 regs_list_1 = c.read_holding_registers(addr, 20)
-print(str(addr) + ' ' + regs_list_1)
+print(addr)
+print(regs_list_1)
+
 
 addr = 102
 regs_list_1 = c.read_holding_registers(addr, 20)
-print(str(addr) + ' ' + regs_list_1)
+print(addr)
+print(regs_list_1)
