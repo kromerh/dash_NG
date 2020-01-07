@@ -21,9 +21,9 @@ except ValueError:
 # 		returnlist.append(regs_list_1)
 # 	print(ii, returnlist)
 
-for ii in range(90,116):
+for ii in range(0,10):
 
-	regs_list_1 = c.read_holding_registers(ii, 20)
+	regs_list_1 = c.read_holding_registers(ii, 50)
 
 	print(ii, regs_list_1)
 
