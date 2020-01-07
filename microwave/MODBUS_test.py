@@ -23,7 +23,7 @@ except ValueError:
 
 for ii in range(0,120):
 
-	regs_list_1 = c.read_holding_registers(ii, 50)
+	regs_list_1 = c.read_holding_registers(ii, 20)
 
 	print(ii, regs_list_1)
 
