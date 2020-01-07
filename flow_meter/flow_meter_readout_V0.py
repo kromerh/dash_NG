@@ -44,7 +44,7 @@ def saveFlowMeterVoltageToDB(voltage, setpoint_voltage):
 	# Create a Cursor object to execute queries.
 	cur = db.cursor()
 	try:
-		cur.execute("""INSERT INTO flow_meter_readout_live (read_voltage, set_voltage) VALUES (%s, %s)""", (voltage, setpoint_voltage))
+		cur.execute("""INSERT INTO flow_meter_readout_live (read_voltage, set_voltage) VALUES (%(read_voltage)s, %(set_voltage)s)""" % {"read_voltage": voltage, "set_voltage": setpoint_voltage})
 	except:
 		cur.rollback()
 

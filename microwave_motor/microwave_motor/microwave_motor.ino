@@ -11,10 +11,14 @@ String command;
 void setup() {
   Serial.begin(9600);
   myservo.attach(7);  // attaches the servo on pin 9 to the servo object
+  // stop the motor
+  myservo.write(90); 
+  delay(200);  
 }
 
 
 void loop() { 
+
         // send data only when you receive data:
         if (Serial.available() > 0) {
                 // read the incoming byte:
@@ -28,11 +32,12 @@ void loop() {
                 Serial.println(dt);              
                 myservo.write(rs.toInt()); 
                 delay(dt.toInt());  
-                delay(100);              
+                delay(200);     
+                  // stop the motor
+                myservo.write(90); 
+                delay(200);           
         }
-        // stop the motor
-        myservo.write(90); 
-        delay(100);  
+
 
   
 } 

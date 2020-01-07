@@ -261,7 +261,7 @@ def plot_graph_data(json_data):
 		'data': traces,
 		'layout': go.Layout(
 			xaxis={'title': 'Time'},
-			yaxis={'title': 'Voltage [V]', 'range': [0, 4]},
+			yaxis={'title': 'Voltage [V]', 'range': [0, 0.1]},
 			margin={'l': 100, 'b': 100, 't': 10, 'r': 10},
 			legend={'x': 0, 'y': 1},
 			hovermode='closest'
