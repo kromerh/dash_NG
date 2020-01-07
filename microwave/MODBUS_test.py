@@ -37,7 +37,7 @@ regs_list_1 = c.read_holding_registers(addr, 20)
 print(addr)
 print(regs_list_1)
 
-addr = 1
-regs_list_1 = c.read_holding_registers(addr, 200)
+addr = 102
+regs_list_1 = c.read_coils(addr, 200)
 print(addr)
 print(regs_list_1)
