@@ -47,7 +47,7 @@ for ii in range(104,110):
 while True:
 	wr = c.write_single_register(20, 128) # modbus heartbeat
 	rr = c.read_holding_registers(99, 1)
-	r0 = c.write_single_register(105, 1)
+	r0 = c.read_holding_registers(105, 1)
 	print(r0)
 
 # addr = 104
