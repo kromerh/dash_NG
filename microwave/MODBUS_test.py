@@ -44,6 +44,9 @@ for ii in range(104,110):
 	regs_list_1 = c.read_holding_registers(ii, 1)
 	print(ii, regs_list_1)
 
+while True:
+	rr = c.read_holding_registers(99, 1)
+	print(rr)
 
 # addr = 104
 # regs_list_1 = c.read_holding_registers(addr, 20)
