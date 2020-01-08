@@ -1,4 +1,9 @@
 from pyModbusTCP.client import ModbusClient
+
+# MAC Address of the microwave generator
+# MAC Address: 00:80:A3:C2:AB:65 (Lantronix)
+
+# sudo
 try:
     # c = ModbusClient(host="169.254.150.42", port=502, auto_open=True, auto_close=True)
     c = ModbusClient(host="169.254.240.201", port=502, auto_open=True, auto_close=True)
@@ -23,9 +28,21 @@ except ValueError:
 # 		returnlist.append(regs_list_1)
 # 	print(ii, returnlist)
 
+print('Reading registers')
 for ii in range(104,110):
 	regs_list_1 = c.read_holding_registers(ii, 1)
 	print(ii, regs_list_1)
+
+print('\n Writing coil')
+bit_addr = 2
+bit_value = 128 # 0 0 0 0 0 0 0 1
+ write_single_coil(bit_addr, bit_value)
+
+print('\n Reading registers')
+for ii in range(104,110):
+	regs_list_1 = c.read_holding_registers(ii, 1)
+	print(ii, regs_list_1)
+
 
 # addr = 104
 # regs_list_1 = c.read_holding_registers(addr, 20)
