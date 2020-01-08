@@ -36,7 +36,8 @@ for ii in range(104,110):
 print('\n Writing coil')
 bit_addr = 2
 bit_value = [128] # 0 0 0 0 0 0 0 1
-c.write_multiple_coils(bit_addr, bit_value)
+wr = c.write_multiple_coils(bit_addr, bit_value)
+print(wr)
 
 print('\n Reading registers')
 for ii in range(104,110):
