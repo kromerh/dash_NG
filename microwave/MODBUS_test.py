@@ -45,6 +45,7 @@ for ii in range(104,110):
 	print(ii, regs_list_1)
 
 while True:
+	wr = c.write_single_register(20, 128) # modbus heartbeat
 	rr = c.read_holding_registers(99, 1)
 	# print(rr)
 
