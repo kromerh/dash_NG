@@ -34,7 +34,7 @@ for ii in range(104,110):
 	print(ii, regs_list_1)
 
 print('\n Writing coil')
-bit_addr = 2
+bit_addr = [2]
 bit_value = [128] # 0 0 0 0 0 0 0 1
 wr = c.write_multiple_registers(bit_addr, bit_value)
 print(wr)
