@@ -22,13 +22,18 @@ credentials = pd.read_csv(credentials_file, header=0)
 user = credentials['username'].values[0]
 pw = credentials['password'].values[0]
 
-
+sql_available = False
 host="twofast-RPi3-0"  # your host
 user=user  # username
 passwd=pw  # password
 db="NG_twofast_DB" # name of the database
 connect_string = 'mysql+pymysql://%(user)s:%(pw)s@%(host)s/%(db)s'% {"user": user, "pw": pw, "host": host, "db": db}
-sql_engine = sql.create_engine(connect_string)
+try:
+	sql_engine = sql.create_engine(connect_string)
+	sql_available = True
+except OperationalError:
+	print("Could not connect to DB")
+	sql_available = False
 
 def retrieveLiveData(sql_engine, pastSeconds=7200):  # read past 2hrs by default
     query = """SELECT * FROM HBox_Uno ORDER BY id DESC LIMIT {}""".format(pastSeconds)
@@ -48,13 +53,15 @@ def retrieveLiveData(sql_engine, pastSeconds=7200):  # read past 2hrs by default
 	Output('live-db-values', 'children'),
 	[Input('live-db-readout-interval', 'n_intervals')])
 def retrieve_data(n):
-	 t = int(float(0.5) * 3600.0)
-	 # some expensive clean data step
-	 df_live_db = retrieveLiveData(sql_engine, t)  # retrieve the past 2 hrs
-	 # print(df_live_db.head())
-	 # more generally, this line would be
-	 # json.dumps(cleaned_df)
-	 return df_live_db.to_json(date_format='iso', orient='split')
+	t = int(float(0.5) * 3600.0)
+	# some expensive clean data step
+	if sql_available:
+		# print('available')
+		df_live_db = retrieveLiveData(sql_engine, t)  # retrieve the past 2 hrs
+		# print(df_live_db.head())
+		# more generally, this line would be
+		# json.dumps(cleaned_df)
+		return df_live_db.to_json(date_format='iso', orient='split')
 
 
 # dose graph

@@ -254,21 +254,136 @@ layout_base = html.Div(
 						html.Div(
 							[
 								html.Button(
-									"MOTOR ON",
-									id='btn-mw-motor-on',
-									style={
-
-										# "paddingTop": "2.5%",
-										"marginBottom": "10%",
-									},
+									"START",
+									id='btn-mw-motor-1-start',
+									style={'width': '200px','height': '50px',"color": "white",'backgroundColor': 'grey'},
+									disabled=True,
 								),
 								html.Button(
-									"MOTOR OFF",
-									id='btn-mw-motor-off'
+									"STOP / RESET",
+									id='btn-mw-motor-2-stop',
+									style={'width': '200px','height': '50px',"color": "white",'backgroundColor': 'grey'},
+									disabled=True,
 								),
-							], className='two columns'
-							, style={'marginLeft':"40%","marginBottom": "5.5%"}
-						)
+								html.Button(
+									"MENU / BACK",
+									id='btn-mw-motor-3-menu',
+									style={'width': '200px','height': '50px',"color": "white",'backgroundColor': 'grey'},
+									disabled=True,
+								),
+							],
+							className="row",
+							style={
+								"display": "flex",
+								"justify-content": "center",
+								"align-items": "center",
+								"marginBottom": "5.0%",
+							},
+						),
+						html.Div(
+							[
+								html.Button(
+									"MOTOR 1 FW slow",
+									id='btn-mw-motor-1-fw-slow',
+									style={'width': '200px','height': '50px'}
+								),
+								html.Button(
+									"MOTOR 2 FW slow",
+									id='btn-mw-motor-2-fw-slow',
+									style={'width': '200px','height': '50px'}
+								),
+								html.Button(
+									"MOTOR 3 FW slow",
+									id='btn-mw-motor-3-fw-slow',
+									style={'width': '200px','height': '50px'}
+								),
+							],
+							className="row",
+							style={
+								"display": "flex",
+								"justify-content": "center",
+								"align-items": "center",
+								"marginBottom": "1.0%",
+							},
+						),
+						html.Div(
+							[
+								html.Button(
+									"MOTOR 1 FW fast",
+									id='btn-mw-motor-1-fw-fast',
+									style={'width': '200px','height': '50px'}
+								),
+								html.Button(
+									"MOTOR 2 FW fast",
+									id='btn-mw-motor-2-fw-fast',
+									style={'width': '200px','height': '50px'}
+								),
+								html.Button(
+									"MOTOR 3 FW fast",
+									id='btn-mw-motor-3-fw-fast',
+									style={'width': '200px','height': '50px'},
+								),
+							],
+							className="row",
+							style={
+								"display": "flex",
+								"justify-content": "center",
+								"align-items": "center",
+								"marginBottom": "10%",
+							},
+						),
+						html.Div(
+							[
+								html.Button(
+									"MOTOR 1 RV slow",
+									id='btn-mw-motor-1-rv-slow',
+									style={'width': '200px','height': '50px'}
+								),
+								html.Button(
+									"MOTOR 2 RV slow",
+									id='btn-mw-motor-2-rv-slow',
+									style={'width': '200px','height': '50px'}
+								),
+								html.Button(
+									"MOTOR 3 RV slow",
+									id='btn-mw-motor-3-rv-slow',
+									style={'width': '200px','height': '50px'}
+								),
+							],
+							className="row",
+							style={
+								"display": "flex",
+								"justify-content": "center",
+								"align-items": "center",
+								"marginBottom": "1.0%",
+							},
+						),
+						html.Div(
+							[
+								html.Button(
+									"MOTOR 1 RV fast",
+									id='btn-mw-motor-1-rv-fast',
+									style={'width': '200px','height': '50px'}
+								),
+								html.Button(
+									"MOTOR 2 RV fast",
+									id='btn-mw-motor-2-rv-fast',
+									style={'width': '200px','height': '50px'}
+								),
+								html.Button(
+									"MOTOR 3 RV fast",
+									id='btn-mw-motor-3-rv-fast',
+									style={'width': '200px','height': '50px'},
+								),
+							],
+							className="row",
+							style={
+								"display": "flex",
+								"justify-content": "center",
+								"align-items": "center",
+								"marginBottom": "10%",
+							},
+						),
 					],
 					className="four columns",
 					style={
@@ -336,10 +451,20 @@ layout_base = html.Div(
 				html.Div(id="flow-meter-readout-command-string"), # start and stop readout of mass flow reading
 				html.Div(id="flow-meter-readout-running-time"), # running readout of mass flow reading
 				html.Div(id="flow-meter-setpoint-value"), # setpoint hold value
-				html.Div(id='flow-meter-readout-values'), # Hidden div inside the app that stores the data from the live db
+				html.Div(id='flow-meter-readout-values-state'), # Hidden div inside the app that stores the data from the live db
 				html.Div(id='microwave-MW-state-values'), # Hidden div inside the app that stores if the MW states
-				html.Div(id='microwave-MW-button-off'), # Hidden div inside the app that stores the status of the MW motor
-				html.Div(id='microwave-MW-button-on'), # Hidden div inside the app that stores the status of the MW motor
+				html.Div(id='mw-motor-1-fw-slow-state'),
+				html.Div(id='mw-motor-2-fw-slow-state'),
+				html.Div(id='mw-motor-3-fw-slow-state'),
+				html.Div(id='mw-motor-1-fw-fast-state'),
+				html.Div(id='mw-motor-2-fw-fast-state'),
+				html.Div(id='mw-motor-3-fw-fast-state'),
+				html.Div(id='mw-motor-1-rv-slow-state'),
+				html.Div(id='mw-motor-2-rv-slow-state'),
+				html.Div(id='mw-motor-3-rv-slow-state'),
+				html.Div(id='mw-motor-1-rv-fast-state'),
+				html.Div(id='mw-motor-2-rv-fast-state'),
+				html.Div(id='mw-motor-3-rv-fast-state'),
 				dcc.Interval(id="live-db-readout-interval", interval=10000, n_intervals=0), # setpoint hold value
 				html.Div(id="live-db-values") # setpoint hold value
 			],
