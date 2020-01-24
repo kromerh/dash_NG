@@ -5,11 +5,11 @@ from pyModbusTCP.client import ModbusClient
 
 # sudo
 try:
-    # c = ModbusClient(host="169.254.150.42", port=502, auto_open=True, auto_close=True)
-    c = ModbusClient(host="169.254.240.116", port=502, auto_open=True, auto_close=True)
-    # c = ModbusClient(host="169.254.240.1", port=502, auto_open=True, auto_close=True)
+	# c = ModbusClient(host="169.254.150.42", port=502, auto_open=True, auto_close=True)
+	c = ModbusClient(host="169.254.240.116", port=502, auto_open=True, auto_close=True)
+	# c = ModbusClient(host="169.254.240.1", port=502, auto_open=True, auto_close=True)
 except ValueError:
-    print("Error with host or port params")
+	print("Error with host or port params")
 
 # for ii in range(0,65535):
 # 	returnlist = []
