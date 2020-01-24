@@ -34,21 +34,21 @@ def set_start_mode_ramp(ModbusClient):
 	# Sets the start mode to ramp
 	# c is ModbusClient
 	wr = ModbusClient.write_single_coil(2,2)
-	print(f'set_start_mode_ramp: {wr}')
+	print('set_start_mode_ramp:' + wr)
 	RAMP_SET = True
 
 def set_start_time(ModbusClient):
 	# Sets the start time to 60s
 	# c is ModbusClient
 	wr = ModbusClient.write_single_coil(4,200)
-	print(f'set_start_time: {wr}')
+	print('set_start_time:' + wr)
 	RAMP_TIME_SET = True
 
 def set_FW_power(ModbusClient):
 	# Sets the forward power set point to 200 W
 	# c is ModbusClient
 	wr = ModbusClient.write_single_coil(0,200)
-	print(f'set_FW_power: {wr}')
+	print('set_FW_power:' + wr)
 	FP_SET = True
 
 def set_microwave_mode(ModbusClient):
@@ -58,7 +58,7 @@ def set_microwave_mode(ModbusClient):
 	bit_addr = 2
 	bit_value = 146 # 0 1 0 0 1 0 0 1
 	wr = c.write_single_register(bit_addr, bit_value)
-	print(f'set_microwave_mode: {wr}')
+	print('set_microwave_mode:' + wr)
 	MODE_SET = True
 
 
@@ -68,32 +68,32 @@ def read_fault_present(ModbusClient):
 	r0 = c.read_holding_registers(105, 1)
 	if (len(r0) > 0) and (r0[0] == 128):
 		# something returned and message is Moduel Ready for Microwaves
-		print(f'Ready for microwaves {r0}')
+		print('Ready for microwaves ' + r0)
 	else:
-		print(f'Fault present: {r0}')
+		print('Fault present:' + r0)
 		# read the type of fault
 		r1 = c.read_holding_registers(104, 1)
-		print(f'Type of fault: {r1}')
+		print('Type of fault:' + r1)
 
 def read_FP(ModbusClient):
 	# reads forward power
 	r0 = c.read_holding_registers(102, 10)
-	print(f'read_FP {r0}')
+	print('read_FP ' + r0)
 
 def read_RP(ModbusClient):
 	# reads reflected power
 	r0 = c.read_holding_registers(103, 10)
-	print(f'read_RP {r0}')
+	print('read_RP' + r0)
 
 def read_set_FP(ModbusClient):
 	# reads setpoint power
 	r0 = c.read_holding_registers(100, 10)
-	print(f'read_set_FP {r0}')
+	print('read_set_FP' + r0)
 
 def read_freq(ModbusClient):
 	# reads current frequency
 	r0 = c.read_holding_registers(112, 10)
-	print(f'read_freq {r0}')
+	print('read_freq' + r0)
 
 
 
