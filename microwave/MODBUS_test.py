@@ -144,7 +144,7 @@ while True:
 
 	# set the microwaves ON:
 	if MW_ON == False:
-		MW_ON = set_microwave_ON(ModbusClient):
+		MW_ON = set_microwave_ON(ModbusClient)
 
 # while True:
 # 	wr = c.write_single_register(20, 128) # modbus heartbeat
