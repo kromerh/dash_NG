@@ -121,10 +121,7 @@ ADD COLUMN id SERIAL PRIMARY KEY;
 # Create the table microwave_generator_state
 CREATE TABLE microwave_generator_state (
 	time TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
-	external_safety boolean NOT NULL,
-	MW_ready boolean NOT NULL,
-	MW_on boolean NOT NULL,
-	fault_present boolean NOT NULL
+	status VARCHAR(5000) NOT NULL
 	);
 
 # Primary key
