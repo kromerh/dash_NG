@@ -220,8 +220,10 @@ while True:
 	# save to DB
 	save_power_to_DB(forward_power[0], reflected_power[0], setpoint_power[0])
 	save_freq_to_DB(frequency_read[0], FREQUENCY_SETPOINT/10)
-	status = status.insert(0, '104:')
-	status = status.insert(0, ', 105:')
+
+	status.insert(0, '104:')
+	status.insert(2, ', 105:')
+	status = [str(s) for s in status]
 	save_status_to_DB(' '.join(status))
 
 # while True:
