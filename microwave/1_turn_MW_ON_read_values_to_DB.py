@@ -59,7 +59,7 @@ def save_status_to_DB(status):
 	# Create a Cursor object to execute queries.
 	cur = db.cursor()
 	try:
-		cur.execute("""INSERT INTO microwave_generator_state (status) VALUES (\"%(status)s\"")""" % {"status": status})
+		cur.execute("""INSERT INTO microwave_generator_state (status) VALUES (\"%(status)s\")""" % {"status": status})
 	except:
 		cur.rollback()
 
