@@ -70,30 +70,36 @@ def read_fault_present(ModbusClient):
 		# something returned and message is Moduel Ready for Microwaves
 		print('Ready for microwaves ' + r0)
 	else:
-		print('Fault present:' + r0)
+		print('Fault present:')
+		print(r0)
 		# read the type of fault
 		r1 = c.read_holding_registers(104, 1)
-		print('Type of fault:' + r1)
+		print('Type of fault:')
+		print(r1)
 
 def read_FP(ModbusClient):
 	# reads forward power
 	r0 = c.read_holding_registers(102, 10)
-	print('read_FP ' + r0)
+	print('read_FP :')
+	print(r0)
 
 def read_RP(ModbusClient):
 	# reads reflected power
 	r0 = c.read_holding_registers(103, 10)
-	print('read_RP' + r0)
+	print('read_RP:')
+	print(r0)
 
 def read_set_FP(ModbusClient):
 	# reads setpoint power
 	r0 = c.read_holding_registers(100, 10)
-	print('read_set_FP' + r0)
+	print('read_set_FP')
+	print(r0)
 
 def read_freq(ModbusClient):
 	# reads current frequency
 	r0 = c.read_holding_registers(112, 10)
-	print('read_freq' + r0)
+	print('read_freq:')
+	print(r0)
 
 
 
