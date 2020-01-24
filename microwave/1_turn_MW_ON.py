@@ -50,14 +50,14 @@ def set_start_time(ModbusClient):
 def set_FW_power(ModbusClient):
 	# Sets the forward power set point to 200 W
 	# c is ModbusClient
-	wr = ModbusClient.write_single_register(0,100)
+	wr = ModbusClient.write_single_register(0,200)
 	print('set_FW_power:' + str(int(wr)))
 	return wr
 
 def set_RP(ModbusClient):
 	# Sets the reflected power set point to 100 W
 	# c is ModbusClient
-	wr = ModbusClient.write_single_register(1,60)
+	wr = ModbusClient.write_single_register(1,100)
 	print('set_RP:' + str(int(wr)))
 	return wr
 
