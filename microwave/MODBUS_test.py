@@ -35,21 +35,21 @@ def set_start_mode_ramp(ModbusClient):
 	# c is ModbusClient
 	wr = ModbusClient.write_single_coil(2,2)
 	print('set_start_mode_ramp:' + str(int(wr)))
-	RAMP_SET = True
+	return wr
 
 def set_start_time(ModbusClient):
 	# Sets the start time to 60s
 	# c is ModbusClient
 	wr = ModbusClient.write_single_register(4,200)
 	print('set_start_time:' + str(int(wr)))
-	RAMP_TIME_SET = True
+	return wr
 
 def set_FW_power(ModbusClient):
 	# Sets the forward power set point to 200 W
 	# c is ModbusClient
 	wr = ModbusClient.write_single_register(0,200)
 	print('set_FW_power:' + str(int(wr)))
-	FP_SET = True
+	return wr
 
 def set_microwave_mode(ModbusClient):
 	# Sets the microwave mode:
@@ -59,7 +59,7 @@ def set_microwave_mode(ModbusClient):
 	bit_value = 146 # 0 1 0 0 1 0 0 1
 	wr = c.write_single_register(bit_addr, bit_value)
 	print('set_microwave_mode:' + str(int(wr)))
-	MODE_SET = True
+	return wr
 
 
 
@@ -110,20 +110,20 @@ while True:
 
 	# set start mode to tamp
 	if RAMP_SET == False:
-		set_start_mode_ramp(c)
+		RAMP_SET = set_start_mode_ramp(c)
 
 	# set start time 60 s
 	if RAMP_TIME_SET == False:
-		set_start_time(c)
+		RAMP_TIME_SET = set_start_time(c)
 
 	# set the forward power set point to 200 W
 	if FP_SET == False:
-		set_FW_power(c)
+		FP_SET = set_FW_power(c)
 
 
 	# set the microwave mode:
-	if set_microwave_mode == False:
-		set_FW_power(c)
+	if MODE_SET == False:
+		 MODE_SET = set_microwave_mode(c)
 
 	read_fault_present(c)
 	read_FP(c)
