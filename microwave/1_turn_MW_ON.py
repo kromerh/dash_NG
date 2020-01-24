@@ -57,14 +57,14 @@ def set_FW_power(ModbusClient):
 def set_RP(ModbusClient):
 	# Sets the reflected power set point to 100 W
 	# c is ModbusClient
-	wr = ModbusClient.write_single_register(1,100)
+	wr = ModbusClient.write_single_register(1,80)
 	print('set_RP:' + str(int(wr)))
 	return wr
 
 def set_freq(ModbusClient):
 	# Sets the reflected power set point to 100 W
 	# c is ModbusClient
-	wr = ModbusClient.write_single_register(9,24500)
+	wr = ModbusClient.write_single_register(9,24450)
 	print('set_freq:' + str(int(wr)))
 	return wr
 
