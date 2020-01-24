@@ -141,20 +141,9 @@ def set_microwave_ON(ModbusClient):
 
 def read_fault_present(ModbusClient):
 	# reads if fault present
-	r0 = c.read_holding_registers(105, 1)
-	r1 = c.read_holding_registers(104, 1)
-	if (len(r0) > 0) and (r0[0] == 128):
-		# something returned and message is Moduel Ready for Microwaves
-		print('Ready for microwaves ')
-		# print(r0)
-		# fault, type of fault
-	else:
-		print('Fault present:')
-		# print(r0)
-		# read the type of fault
-		r1 = c.read_holding_registers(104, 1)
-		# print('Type of fault:')
-		# print(r1)
+	r0 = c.read_holding_registers(104, 1)
+	r1 = c.read_holding_registers(105, 1)
+
 	return [r0[0], r1[0]]
 
 def read_FP(ModbusClient):
@@ -227,6 +216,14 @@ while True:
 		MW_ON = set_microwave_ON(ModbusClient)
 
 	print(status, forward_power, reflected_power, setpoint_power, frequency_read)
+
+	# save to DB
+	save_power_to_DB(forward_power[0], reflected_power[0], setpoint_power[0])
+	save_freq_to_DB(frequency_read[0], FREQUENCY_SETPOINT/10)
+	status.insert(0, '104:')
+	status.insert(0, ', 105:')
+	save_status_to_DB(' '.join(status))
+
 # while True:
 # 	set_microwave_mode(c)
 
