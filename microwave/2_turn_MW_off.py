@@ -50,14 +50,14 @@ def set_start_time(ModbusClient):
 def set_FW_power(ModbusClient):
 	# Sets the forward power set point to 200 W
 	# c is ModbusClient
-	wr = ModbusClient.write_single_register(0,200)
+	wr = ModbusClient.write_single_register(0,0)
 	print('set_FW_power:' + str(int(wr)))
 	return wr
 
 def set_RP(ModbusClient):
 	# Sets the reflected power set point to 100 W
 	# c is ModbusClient
-	wr = ModbusClient.write_single_register(1,100)
+	wr = ModbusClient.write_single_register(1,1)
 	print('set_RP:' + str(int(wr)))
 	return wr
 
@@ -73,7 +73,7 @@ def set_microwave_mode(ModbusClient):
 	#	autotuning on, reflected power RP limitation, reset faults
 	# c is ModbusClient
 	bit_addr = 2
-	bit_value = 146 # 0 1 0 0 1 0 0 1
+	bit_value = 0 # 0 0 0 0 0 0 0 0
 	wr = c.write_single_register(bit_addr, bit_value)
 	print('set_microwave_mode:' + str(int(wr)))
 	return wr
@@ -131,47 +131,42 @@ def read_freq(ModbusClient):
 
 
 
-# while True:
-# 	# sent hearbeat
-# 	send_heartbeat(c)
-
-# 	# set start mode to tamp
-# 	if RAMP_SET == False:
-# 		RAMP_SET = set_start_mode_ramp(c)
-
-# 	# set start time 60 s
-# 	if RAMP_TIME_SET == False:
-# 		RAMP_TIME_SET = set_start_time(c)
-
-# 	# set the forward power set point to 200 W
-# 	if FP_SET == False:
-# 		FP_SET = set_FW_power(c)
-
-# 	# set the reflected power set point to 100 W
-# 	if RP_SET == False:
-# 		RP_SET = set_RP(c)
-
-# 	# set the reflected power set point to 100 W
-# 	if FREQ_SET == FALSE:
-# 		FREQ_SET = set_freq(c)
-
-# 	# set the microwave mode:
-# 	if MODE_SET == False:
-# 		 MODE_SET = set_microwave_mode(c)
-
-# 	read_fault_present(c)
-# 	read_FP(c)
-# 	read_RP(c)
-# 	read_set_FP(c)
-# 	read_freq(c)
-
-# 	# set the microwaves ON:
-# 	if MW_ON == False:
-# 		MW_ON = set_microwave_ON(ModbusClient)
-
-
 while True:
-	set_microwave_mode(c)
+	# sent hearbeat
+	send_heartbeat(c)
+
+	# set start mode to tamp
+	if RAMP_SET == False:
+		RAMP_SET = set_start_mode_ramp(c)
+
+	# set start time 60 s
+	if RAMP_TIME_SET == False:
+		RAMP_TIME_SET = set_start_time(c)
+
+	# set the forward power set point to 200 W
+	if FP_SET == False:
+		FP_SET = set_FW_power(c)
+
+	# set the reflected power set point to 100 W
+	if RP_SET == False:
+		RP_SET = set_RP(c)
+
+	# set the reflected power set point to 100 W
+	if FREQ_SET == FALSE:
+		FREQ_SET = set_freq(c)
+
+	# set the microwave mode:
+	if MODE_SET == False:
+		 MODE_SET = set_microwave_mode(c)
+
+	read_fault_present(c)
+	read_FP(c)
+	read_RP(c)
+	read_set_FP(c)
+	read_freq(c)
+
+
+
 
 # while True:
 # 	wr = c.write_single_register(20, 128) # modbus heartbeat
