@@ -152,7 +152,7 @@ while True:
 		RP_SET = set_RP(c)
 
 	# set the reflected power set point to 100 W
-	if FREQ_SET == FALSE:
+	if FREQ_SET == False:
 		FREQ_SET = set_freq(c)
 
 	# set the microwave mode:
