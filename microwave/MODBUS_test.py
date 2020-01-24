@@ -23,6 +23,7 @@ except ValueError:
 RAMP_SET = False
 RAMP_TIME_SET = False
 FP_SET = False
+RP_SET = False
 MODE_SET = False
 MW_ON = False
 
@@ -50,6 +51,13 @@ def set_FW_power(ModbusClient):
 	# c is ModbusClient
 	wr = ModbusClient.write_single_register(0,200)
 	print('set_FW_power:' + str(int(wr)))
+	return wr
+
+def set_RP(ModbusClient):
+	# Sets the reflected power set point to 100 W
+	# c is ModbusClient
+	wr = ModbusClient.write_single_register(1,100)
+	print('set_RP:' + str(int(wr)))
 	return wr
 
 def set_microwave_mode(ModbusClient):
@@ -131,6 +139,9 @@ while True:
 	if FP_SET == False:
 		FP_SET = set_FW_power(c)
 
+	# set the reflected power set point to 100 W
+	if RP_SET == False:
+		RP_SET = set_RP(c)
 
 	# set the microwave mode:
 	if MODE_SET == False:
