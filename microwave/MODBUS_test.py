@@ -24,6 +24,7 @@ RAMP_SET = False
 RAMP_TIME_SET = False
 FP_SET = False
 MODE_SET = False
+MW_ON = False
 
 def send_heartbeat(ModbusClient):
 	# sends MODBUS heart beat
@@ -59,6 +60,16 @@ def set_microwave_mode(ModbusClient):
 	bit_value = 146 # 0 1 0 0 1 0 0 1
 	wr = c.write_single_register(bit_addr, bit_value)
 	print('set_microwave_mode:' + str(int(wr)))
+	return wr
+
+def set_microwave_ON(ModbusClient):
+	# Sets the microwave mode:
+	#	autotuning on, reflected power RP limitation, MW ON, reset faults
+	# c is ModbusClient
+	bit_addr = 2
+	bit_value = 210 # 0 1 0 0 1 0 1 1
+	wr = c.write_single_register(bit_addr, bit_value)
+	print('set_microwave_ON:' + str(int(wr)))
 	return wr
 
 
@@ -131,6 +142,9 @@ while True:
 	read_set_FP(c)
 	read_freq(c)
 
+	# set the microwaves ON:
+	if MW_ON == False:
+		MW_ON = set_microwave_ON(ModbusClient):
 
 # while True:
 # 	wr = c.write_single_register(20, 128) # modbus heartbeat
