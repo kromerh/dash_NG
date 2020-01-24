@@ -40,7 +40,7 @@ def set_start_mode_ramp(ModbusClient):
 def set_start_time(ModbusClient):
 	# Sets the start time to 60s
 	# c is ModbusClient
-	wr = ModbusClient.write_single_coil(4,200)
+	wr = ModbusClient.write_single_register(4,200)
 	print('set_start_time:' + str(int(wr)))
 	RAMP_TIME_SET = True
 
