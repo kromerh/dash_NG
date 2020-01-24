@@ -68,7 +68,8 @@ def read_fault_present(ModbusClient):
 	r0 = c.read_holding_registers(105, 1)
 	if (len(r0) > 0) and (r0[0] == 128):
 		# something returned and message is Moduel Ready for Microwaves
-		print('Ready for microwaves ' + r0)
+		print('Ready for microwaves ')
+		print(r0)
 	else:
 		print('Fault present:')
 		print(r0)
