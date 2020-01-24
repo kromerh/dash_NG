@@ -36,7 +36,7 @@ def send_heartbeat(ModbusClient):
 def set_start_mode_ramp(ModbusClient):
 	# Sets the start mode to ramp
 	# c is ModbusClient
-	wr = ModbusClient.write_single_coil(2,2)
+	wr = ModbusClient.write_single_register(3,2)
 	print('set_start_mode_ramp:' + str(int(wr)))
 	return wr
 
