@@ -55,6 +55,7 @@ def save_freq_to_DB(frequency, frequency_setpoint):
 	cur.close()
 
 def save_status_to_DB(status):
+	print(status)
 	# Create a Cursor object to execute queries.
 	cur = db.cursor()
 	try:
