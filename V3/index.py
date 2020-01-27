@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output, State
 
 
 from app import app # calls the app
-from apps import app_microwave_flow_meter
+from apps import app_microwave_flow_meter_MODBUS
 
 
 app.layout = html.Div([
@@ -16,7 +16,7 @@ app.layout = html.Div([
 ])
 
 index_page = html.Div([
-	dcc.Link('Go to flow meter and microwave control layout', href='/apps/app_microwave_flow_meter'),
+	dcc.Link('Go to flow meter and microwave control layout', href='/apps/app_microwave_flow_meter_MODBUS'),
 	html.Br()
 ])
 
@@ -24,8 +24,8 @@ index_page = html.Div([
 @app.callback(Output('page-content', 'children'),
 			  [Input('url', 'pathname')])
 def display_page(pathname):
-	if pathname == '/apps/app_microwave_flow_meter':
-		return app_microwave_flow_meter.layout_base
+	if pathname == '/apps/app_microwave_flow_meter_MODBUS':
+		return app_microwave_flow_meter_MODBUS.layout_microwave
 	else:
 		return index_page
 	# You could also return a 404 "URL not found" page here

@@ -17,10 +17,10 @@ from app import app
 
 
 ################################################################################################################################################
-# layout_base
+# layout_microwave
 ################################################################################################################################################
 
-layout_base = html.Div(
+layout_microwave = html.Div(
 	[
 		html.Div(
 			id="container",
@@ -386,7 +386,9 @@ layout_base = html.Div(
 				html.Div(id="flow-meter-setpoint-value"), # setpoint hold value
 				html.Div(id='flow-meter-readout-values-state'), # Hidden div inside the app that stores the data from the live db
 				html.Div(id='microwave-MW-state-values'), # Hidden div inside the app that stores if the MW states
-				html.Div(id='mw-db-values'), # db values from the mw
+				html.Div(id='mw-db-power-values'), # db values from the mw: power
+				html.Div(id='mw-db-frequency-values'), # db values from the mw: frequency
+				html.Div(id='mw-db-status-values'), # db values from the mw: status
 				dcc.Interval(id="live-db-readout-interval", interval=10000, n_intervals=0), # setpoint hold value
 				html.Div(id="live-db-values") # setpoint hold value
 			],
