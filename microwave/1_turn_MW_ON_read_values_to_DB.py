@@ -6,6 +6,20 @@ import pandas as pd
 import pymysql
 import re
 
+# filename where the IP address of the microwave generator is stored
+# must be first line!
+FNAME_IP = "ip_microwave.txt"
+
+c = []
+with open(FNAME_IP, 'r') as file:
+	for lines in file:
+		c.append(line.rstrip().split())
+	file.close()
+
+mw_ip = c[0]
+
+print(f"IP Address found in {FNAME_IP} is {mw_ip}")
+
 # read password and user to database
 credentials_file = r'./credentials.pw'
 
@@ -26,7 +40,7 @@ db = pymysql.connect(host="twofast-RPi3-0",  # your host
 # sudo
 try:
 	# c = ModbusClient(host="169.254.150.42", port=502, auto_open=True, auto_close=True)
-	c = ModbusClient(host="169.254.240.116", port=502, auto_open=True, auto_close=True)
+	c = ModbusClient(host=mw_ip, port=502, auto_open=True, auto_close=True)
 	# c = ModbusClient(host="169.254.240.1", port=502, auto_open=True, auto_close=True)
 except ValueError:
 	print("Error with host or port params")
