@@ -8,18 +8,19 @@ import re
 
 # filename where the IP address of the microwave generator is stored
 # must be first line!
-FNAME_IP = "ip_microwave.txt"
+#FNAME_IP = "ip_microwave.txt"
 
-c = []
-with open(FNAME_IP, 'r') as file:
-	for lines in file:
-		c.append(line.rstrip().split())
-	file.close()
+#c = []
+#with open(FNAME_IP, 'r') as file:#
+#	for line in file:
+#		c.append(line.rstrip().split())
+#	file.close()
 
-mw_ip = c[0]
+mw_ip = "169.254.240.201"
 
-print(f"IP Address found in {FNAME_IP} is {mw_ip}")
-
+#print("IP Address found in ", FNAME_IP, " is ", mw_ip)
+#print(type(mw_ip))
+# print(mw_ip)
 # read password and user to database
 credentials_file = r'./credentials.pw'
 
@@ -108,7 +109,7 @@ def set_start_time(ModbusClient):
 	# Sets the start time to 60s
 	# c is ModbusClient
 	wr = ModbusClient.write_single_register(4,60)
-	print('set_start_time:' + str(int(wr)))
+	# print('set_start_time:' + str(int(wr)))
 	return wr
 
 def set_FW_power(ModbusClient):
@@ -240,7 +241,7 @@ while True:
 	status.insert(2, ', 105:')
 	status = [str(s) for s in status]
 	save_status_to_DB(' '.join(status))
-
+	sleep(0.1)
 # while True:
 # 	set_microwave_mode(c)
 
